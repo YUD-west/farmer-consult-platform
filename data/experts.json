@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Dr. Abera",
+    "specialty": "Soil Specialist",
+    "contact": "abera@example.com"
+  },
+  {
+    "name": "Dr. Selam",
+    "specialty": "Crop Scientist",
+    "contact": "selam@example.com"
+  },
+  {
+    "name": "Dr. Mekdes",
+    "specialty": "Market Analyst",
+    "contact": "mekdes@example.com"
+  }
+]

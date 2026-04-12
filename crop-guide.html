@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1B5E20" />
+    <title>YegnaFarm - Crop Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-content">
+        <a class="brand" href="index.html" aria-label="YegnaFarm home">
+          <img class="brand-logo" src="assets/logo.png" alt="YegnaFarm logo" />
+          <div class="brand-text">
+            <span class="brand-mark">YegnaFarm</span>
+            <span class="tagline">Digital agriculture advisor for Ethiopia</span>
+          </div>
+        </a>
+        <nav class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="crop-guide.html">Guides</a>
+          <a href="market.html">Market</a>
+          <a href="dashboard.html">Experts</a>
+          <a href="upload.html">Ask Questions</a>
+          <a class="signup-btn" href="signup.html">Sign Up</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <section class="page-hero">
+        <div class="container">
+          <h1>Crop Guide / Farmer Tips</h1>
+          <p>Browse crop families and quick tips to improve yield and quality.</p>
+        </div>
+      </section>
+      <section class="section">
+        <div class="container">
+          <div class="cards guide-cards" id="guideCards"></div>
+          <div class="guide-info" id="guideInfo"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-content">
+        <div class="footer-brand">
+          <img class="footer-logo" src="assets/logo.png" alt="YegnaFarm logo" />
+          <span>© 2026 YegnaFarm. All rights reserved.</span>
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>

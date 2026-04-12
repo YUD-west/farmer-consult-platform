@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api" },
+    { "source": "/ask", "destination": "/api" },
+    { "source": "/ask-question", "destination": "/api" },
+    { "source": "/market-data", "destination": "/api" },
+    { "source": "/dashboard-stats", "destination": "/api" },
+    { "source": "/detect", "destination": "/api" }
+  ],
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 60,
+      "includeFiles": "{*.html,css/**,js/**,assets/**,data/**,locales/**,manifest.json,service-worker.js}"
+    }
+  }
+}

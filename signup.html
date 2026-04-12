@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1B5E20" />
+    <title>YegnaFarm - Sign Up</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="manifest" href="manifest.json" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-content">
+        <a class="brand" href="index.html" aria-label="YegnaFarm home">
+          <img class="brand-logo" src="assets/logo.png" alt="YegnaFarm logo" />
+          <div class="brand-text">
+            <span class="brand-mark">YegnaFarm</span>
+            <span class="tagline">Digital agriculture advisor for Ethiopia</span>
+          </div>
+        </a>
+        <nav class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="crop-guide.html">Guides</a>
+          <a href="market.html">Market</a>
+          <a href="dashboard.html">Experts</a>
+          <a href="upload.html">Ask Questions</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <section class="page-hero">
+        <div class="container">
+          <h1>Create Your Account</h1>
+          <p>Join YegnaFarm to get personalized guidance and market updates.</p>
+        </div>
+      </section>
+      <section class="section section-alt">
+        <div class="container auth-card">
+          <form class="auth-form">
+            <label>
+              Full Name
+              <input type="text" placeholder="Your full name" required />
+            </label>
+            <label>
+              Phone Number
+              <input type="tel" placeholder="e.g. +251..." required />
+            </label>
+            <label>
+              Region
+              <input type="text" placeholder="Region / Zone" />
+            </label>
+            <label>
+              Password
+              <input type="password" placeholder="Create a password" required />
+            </label>
+            <button class="primary-btn" type="submit">Sign Up</button>
+          </form>
+          <p class="upload-note">Signup is for MVP demo only. Backend auth will be added later.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-content">
+        <div class="footer-brand">
+          <img class="footer-logo" src="assets/logo.png" alt="YegnaFarm logo" />
+          <span>© 2026 YegnaFarm. All rights reserved.</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

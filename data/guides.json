@@ -1,0 +1,518 @@
+﻿{
+  "families": [
+    "Cereals",
+    "Legumes (Pulses)",
+    "Root & Tuber Crops",
+    "Vegetables",
+    "Fruits",
+    "Oil & Special Crops",
+    "Cattle Breeds"
+  ],
+  "questions": [
+    {
+      "keyword": "maize",
+      "response": "Use well-prepared soil, compost, and water regularly."
+    },
+    {
+      "keyword": "teff",
+      "response": "Plant teff in fertile soil, keep pH 6-7, use compost or NPK if needed."
+    }
+  ],
+  "details": {
+    "prePlantingPreparation": {
+      "title": "Pre-Planting Preparation",
+      "steps": [
+        {
+          "title": "Check Your Soil Health",
+          "points": [
+            "pH targets: maize/cereals 5.5–7.0, beans/legumes 6.0–7.5, vegetables 6.0–6.8.",
+            "Use a local soil pH test kit or lab for testing.",
+            "Too acidic (<5.5): add lime. Too alkaline (>7.5): add sulfur or compost."
+          ]
+        },
+        {
+          "title": "Fertilizer & Compost",
+          "points": [
+            "Organic: well-decomposed manure, compost, vermicompost (2–5 tons/ha).",
+            "DAP 50–100 kg/ha at planting; Urea 50–100 kg/ha top-dress.",
+            "NPK 15:15:15 50–100 kg/ha for balanced growth.",
+            "Tip: mix chemical fertilizer with compost."
+          ]
+        },
+        {
+          "title": "Seed Selection & Treatment",
+          "points": [
+            "Choose certified seeds and resistant varieties.",
+            "Treat with fungicide/biofungicide (e.g., Apron, Captan).",
+            "Optional: hot water soak 50°C for 10–15 minutes."
+          ]
+        },
+        {
+          "title": "Field Preparation",
+          "points": [
+            "Remove weeds manually or with herbicides.",
+            "Plow/till 2–3 times to aerate.",
+            "Ensure drainage; form ridges for rows.",
+            "Incorporate compost/fertilizer into topsoil."
+          ]
+        },
+        {
+          "title": "Irrigation Planning",
+          "points": [
+            "Assess water source for season availability.",
+            "Furrow irrigation for cereals; drip for vegetables.",
+            "Water lightly before planting; follow crop schedules."
+          ]
+        }
+      ]
+    },
+    "plantingSowing": {
+      "title": "Planting / Sowing",
+      "steps": [
+        {
+          "title": "Planting Time",
+          "points": [
+            "Cereals: plant at rainy season start (Ethiopia maize June–July).",
+            "Legumes: plant after soil warms (often July–August).",
+            "Vegetables: early rainy season; avoid waterlogging."
+          ]
+        },
+        {
+          "title": "Planting Depth",
+          "points": [
+            "Small seeds: 2–3 cm; medium: 3–5 cm; large: 4–6 cm.",
+            "Deeper in dry soil, shallower in wet soil."
+          ]
+        },
+        {
+          "title": "Planting Spacing",
+          "points": [
+            "Maize: 75 cm rows, 25–30 cm plants.",
+            "Beans: 40–50 cm rows, 10–15 cm plants.",
+            "Vegetables: cabbage 50×50 cm, tomato 60×60 cm."
+          ]
+        },
+        {
+          "title": "Seed Rate",
+          "points": [
+            "Maize 20–25 kg/ha; beans 60–80 kg/ha.",
+            "Vegetables: 3–5 g/m² for small seeds."
+          ]
+        },
+        {
+          "title": "Companion Planting",
+          "points": [
+            "Maize + beans; cabbage + onion.",
+            "Helps reduce pests naturally."
+          ]
+        },
+        {
+          "title": "Row Orientation",
+          "points": [
+            "Align rows north–south for better sunlight."
+          ]
+        },
+        {
+          "title": "Seed Treatment at Sowing",
+          "points": [
+            "Fungicide coating prevents damping-off.",
+            "Biofertilizer for legumes improves N fixation.",
+            "Soak seeds in warm water 10–15 min."
+          ]
+        },
+        {
+          "title": "Irrigation After Sowing",
+          "points": [
+            "Water lightly after sowing; avoid waterlogging.",
+            "Continue watering until seedlings are strong."
+          ]
+        }
+      ]
+    },
+    "cropMaintenance": {
+      "title": "Crop Maintenance",
+      "steps": [
+        {
+          "title": "Fertilization Schedule",
+          "points": [
+            "Cereals: DAP 50–100 kg/ha at planting; Urea 50–100 kg/ha at 4–6 leaves.",
+            "Legumes: use Rhizobium; avoid high nitrogen.",
+            "Vegetables: compost/manure + NPK 50–100 kg/ha; small N doses later.",
+            "Tip: mix organic + chemical fertilizers."
+          ]
+        },
+        {
+          "title": "Irrigation / Watering",
+          "points": [
+            "Water based on soil moisture and growth stage.",
+            "Cereals: germination and flowering are critical.",
+            "Vegetables: keep moisture during flowering/fruiting.",
+            "Avoid overwatering to prevent root rot."
+          ]
+        },
+        {
+          "title": "Weed Control",
+          "points": [
+            "Remove weeds early (first 3–4 weeks).",
+            "Use mulch to suppress weeds and retain moisture."
+          ]
+        },
+        {
+          "title": "Pest & Disease Management",
+          "points": [
+            "Pests: stem borers, aphids, armyworms, leaf miners.",
+            "Diseases: leaf blight, rust, fungal diseases.",
+            "Chemical: Dimethoate, Karate, Mancozeb (local guidance).",
+            "Organic: neem, soap solution, ash powder.",
+            "Monitor weekly and rotate crops."
+          ]
+        },
+        {
+          "title": "Soil & Nutrient Management",
+          "points": [
+            "Add compost/manure during growth.",
+            "Side-dress Urea 3–4 weeks after planting for high-demand crops.",
+            "Avoid excess nitrogen."
+          ]
+        },
+        {
+          "title": "Other Maintenance Tips",
+          "points": [
+            "Prune damaged leaves; stake tall plants.",
+            "Keep records of inputs and dates."
+          ]
+        }
+      ]
+    },
+    "harvesting": {
+      "title": "Harvesting",
+      "steps": [
+        {
+          "title": "Signs of Crop Maturity",
+          "points": [
+            "Cereals: leaves dry; kernels hard; ears detach.",
+            "Legumes: pods brown; seeds hard.",
+            "Vegetables: full size and color."
+          ]
+        },
+        {
+          "title": "Harvesting Techniques",
+          "points": [
+            "Cereals: cut stalks or hand-pick ears.",
+            "Legumes: pick pods by hand.",
+            "Vegetables: use knife/scissors; harvest cool hours."
+          ]
+        },
+        {
+          "title": "Post-Harvest Handling",
+          "points": [
+            "Sun-dry grains 2–3 days; shade vegetables.",
+            "Clean and sort; store in airtight bags or ventilated areas."
+          ]
+        },
+        {
+          "title": "Transport Tips",
+          "points": [
+            "Use clean baskets/sacks.",
+            "Avoid piling too high; handle gently."
+          ]
+        }
+      ]
+    },
+    "marketingSelling": {
+      "title": "Marketing & Selling",
+      "steps": [
+        {
+          "title": "Know Your Market",
+          "points": [
+            "Check prices before harvesting.",
+            "Compare local markets; know demand."
+          ]
+        },
+        {
+          "title": "Crop Preparation for Sale",
+          "points": [
+            "Sort, clean, and package with clean containers."
+          ]
+        },
+        {
+          "title": "Storage Before Sale",
+          "points": [
+            "Grains in dry airtight bags; vegetables in cool ventilated areas.",
+            "Avoid long storage."
+          ]
+        },
+        {
+          "title": "Pricing & Negotiation",
+          "points": [
+            "Know average price; negotiate politely.",
+            "Consider cooperatives/direct buyers."
+          ]
+        },
+        {
+          "title": "Timing of Sale",
+          "points": [
+            "Sell when demand is high.",
+            "Perishables early morning; non-perishables can be stored."
+          ]
+        },
+        {
+          "title": "Record-Keeping",
+          "points": [
+            "Track quantity, price, and market location."
+          ]
+        }
+      ]
+    },
+    "troubleshooting": {
+      "title": "Problem Solving / Troubleshooting",
+      "steps": [
+        {
+          "title": "Identify Common Crop Problems",
+          "points": [
+            "Yellow leaves: nitrogen or water stress.",
+            "Stunted growth: soil, pests, or low sunlight.",
+            "Wilting: root rot or water shortage.",
+            "Spots: fungal or bacterial disease."
+          ]
+        },
+        {
+          "title": "Soil & Nutrient Problems",
+          "points": [
+            "Nitrogen: apply Urea/manure.",
+            "Phosphorus: apply DAP.",
+            "Potassium: apply potash."
+          ]
+        },
+        {
+          "title": "Pest Control",
+          "points": [
+            "Use recommended pesticides or organic options.",
+            "Remove affected leaves/plants early."
+          ]
+        },
+        {
+          "title": "Disease Control",
+          "points": [
+            "Fungicides for fungal diseases.",
+            "Remove infected plants; avoid wetting leaves.",
+            "Rotate crops."
+          ]
+        },
+        {
+          "title": "Water & Irrigation Troubleshooting",
+          "points": [
+            "Overwatering: reduce irrigation.",
+            "Underwatering: increase frequency.",
+            "Check soil moisture 5–10 cm deep."
+          ]
+        },
+        {
+          "title": "Practical Tips",
+          "points": [
+            "Inspect weekly and keep a notebook.",
+            "Ask experts or use AI guidance."
+          ]
+        }
+      ]
+    },
+    "cattleBreedingSafety": {
+      "title": "Cattle Breeding & Safety",
+      "steps": [
+        {
+          "title": "Selecting Healthy Animals",
+          "points": [
+            "Choose strong, disease-free cattle suited to region.",
+            "Avoid visible defects or unusual behavior."
+          ]
+        },
+        {
+          "title": "Feeding & Nutrition",
+          "points": [
+            "Daily feed: grass, hay, residues, or silage.",
+            "Mineral blocks/salt licks; clean water twice daily."
+          ]
+        },
+        {
+          "title": "Breeding Practices",
+          "points": [
+            "Natural mating: 1 bull per 20–30 cows.",
+            "AI for better genetics; record breeding dates."
+          ]
+        },
+        {
+          "title": "Vaccination & Health Care",
+          "points": [
+            "Vaccinate for Anthrax, Blackleg, Pasteurellosis.",
+            "Deworm every 6 months; isolate sick animals."
+          ]
+        },
+        {
+          "title": "Housing & Safety",
+          "points": [
+            "Safe pens, dry bedding, good ventilation.",
+            "Avoid cold drafts in highland areas."
+          ]
+        },
+        {
+          "title": "Record-Keeping",
+          "points": [
+            "Track birth dates, breeding, vaccinations, weights.",
+            "Use records to plan feeding and market timing."
+          ]
+        }
+      ]
+    },
+    "agroforestrySoilConservation": {
+      "title": "Agroforestry & Soil Conservation",
+      "steps": [
+        {
+          "title": "Planting Trees on Your Farm",
+          "points": [
+            "Plant along boundaries or terraces.",
+            "Benefits: reduce erosion, add shade, improve fertility.",
+            "Trees: Sesbania, Grevillea, Moringa, Acacia."
+          ]
+        },
+        {
+          "title": "Preventing Soil Erosion",
+          "points": [
+            "Contour farming and terracing.",
+            "Cover crops to hold soil."
+          ]
+        },
+        {
+          "title": "Adding Organic Matter",
+          "points": [
+            "Use compost, manure, or crop residues regularly.",
+            "Improves structure and water holding."
+          ]
+        },
+        {
+          "title": "Sustainable Land Use",
+          "points": [
+            "Rotate crops and allow fallow if needed.",
+            "Combine trees, crops, and animals."
+          ]
+        }
+      ]
+    },
+    "waterIrrigationManagement": {
+      "title": "Water & Irrigation Management",
+      "steps": [
+        {
+          "title": "Water Sources",
+          "points": [
+            "Identify rivers, ponds, wells, or rainwater.",
+            "Check quantity and quality before planting."
+          ]
+        },
+        {
+          "title": "Efficient Irrigation Methods",
+          "points": [
+            "Furrow for cereals; drip for vegetables.",
+            "Sprinklers for large areas; manual watering for small plots."
+          ]
+        },
+        {
+          "title": "Timing of Irrigation",
+          "points": [
+            "Water early morning or late evening.",
+            "Keep soil moist, not waterlogged."
+          ]
+        },
+        {
+          "title": "Drought Management",
+          "points": [
+            "Mulch; plant drought-tolerant crops.",
+            "Harvest rainwater in ponds or tanks."
+          ]
+        },
+        {
+          "title": "Water Conservation Tips",
+          "points": [
+            "Repair leaks and schedule irrigation.",
+            "Check moisture 5–10 cm below surface."
+          ]
+        }
+      ]
+    },
+    "climateWeatherAwareness": {
+      "title": "Climate & Weather Awareness",
+      "steps": [
+        {
+          "title": "Monitor Weather and Seasons",
+          "points": [
+            "Observe rainfall patterns.",
+            "Use local forecasts or radio."
+          ]
+        },
+        {
+          "title": "Crop Selection for the Season",
+          "points": [
+            "Choose short-season or drought-tolerant crops if needed.",
+            "Avoid sensitive crops during heavy rain/cold."
+          ]
+        },
+        {
+          "title": "Protect Crops from Extreme Weather",
+          "points": [
+            "Raised beds for heavy rain.",
+            "Windbreak trees and shade nets."
+          ]
+        },
+        {
+          "title": "Record Keeping",
+          "points": [
+            "Track planting dates, rainfall, and performance."
+          ]
+        },
+        {
+          "title": "Climate-Smart Practices",
+          "points": [
+            "Rotation, intercropping, mulching, composting."
+          ]
+        }
+      ]
+    },
+    "farmFinanceRecordKeeping": {
+      "title": "Farm Finance & Record-Keeping",
+      "steps": [
+        {
+          "title": "Track Expenses",
+          "points": [
+            "Seeds, fertilizers, compost, pesticides, labor, tools.",
+            "Use notebook or phone."
+          ]
+        },
+        {
+          "title": "Track Income",
+          "points": [
+            "Sales from crops, livestock, milk, eggs.",
+            "Record quantity, price, buyer."
+          ]
+        },
+        {
+          "title": "Budgeting for the Season",
+          "points": [
+            "Plan input spending.",
+            "Reserve for unexpected problems."
+          ]
+        },
+        {
+          "title": "Planning for Next Season",
+          "points": [
+            "Review profitable crops and effective treatments.",
+            "Decide seed quantities."
+          ]
+        },
+        {
+          "title": "Accessing Support",
+          "points": [
+            "Keep receipts for subsidies, loans, training, cooperatives."
+          ]
+        }
+      ]
+    }
+  }
+}

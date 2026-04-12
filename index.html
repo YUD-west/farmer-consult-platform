@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1B5E20" />
+    <title>YegnaFarm - Farmers Consulting Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-content">
+        <a class="brand" href="#home" aria-label="YegnaFarm home">
+          <img class="brand-logo" src="assets/logo.png" alt="YegnaFarm logo" />
+          <div class="brand-text">
+            <span class="brand-mark">YegnaFarm</span>
+            <span class="tagline">Digital agriculture advisor for Ethiopia</span>
+          </div>
+        </a>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+          <span></span><span></span><span></span>
+        </button>
+        <nav class="nav-links" id="navLinks">
+          <a href="index.html" data-i18n="navHome">Home</a>
+          <a href="crop-guide.html" data-i18n="navGuides">Guides</a>
+          <a href="market.html" data-i18n="navMarket">Market</a>
+          <a href="dashboard.html" data-i18n="navExperts">Experts</a>
+          <a href="upload.html" data-i18n="navAsk">Ask Questions</a>
+          <select id="languageSelect" class="lang-select" aria-label="Language">
+            <option value="en">English</option>
+            <option value="am">አማርኛ</option>
+            <option value="om">Afan Oromo</option>
+          </select>
+          <a class="signup-btn" href="signup.html" data-i18n="navSignup">Sign Up</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section id="home" class="hero">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+          <div>
+            <h1 data-i18n="heroTitle">Smart Guidance for Every Farmer</h1>
+            <p data-i18n="heroSubtitle">
+              Grow Smarter • Sell Better • Earn More
+            </p>
+            <div class="hero-actions hero-actions-row">
+              <a class="cta-btn" href="chat.html" data-i18n="heroAskAi">Ask AI</a>
+              <a class="ghost-btn" href="crop-guide.html" data-i18n="heroBrowseCrops">Browse crops</a>
+              <a class="ghost-btn" href="market.html" data-i18n="heroSell">Market</a>
+            </div>
+            <p class="hero-secondary">
+              <button type="button" class="link-btn" data-scroll="#guides" data-i18n="heroCta">Guides overview</button>
+              <span aria-hidden="true"> · </span>
+              <button type="button" class="link-btn" data-scroll="#market" data-i18n="heroExplore">Scroll to prices</button>
+            </p>
+          </div>
+          <div class="hero-image">
+            <img
+              src="assets/hero.jpg"
+              alt="Smiling farmer holding a tablet in farmland"
+              loading="eager"
+            />
+          </div>
+        </div>
+      </section>
+
+
+
+      <section id="guides" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h2 data-i18n="guidesTitle">Guides</h2>
+            <p data-i18n="guidesSubtitle">
+              Practical crop guides for better yields and healthier harvests.
+            </p>
+          </div>
+          <div class="cards guide-cards" id="guideCards"></div>
+          <div class="guide-info" id="guideInfo"></div>
+        </div>
+      </section>
+
+      <section id="market" class="section section-alt">
+        <div class="container">
+          <div class="section-header">
+            <h2 data-i18n="marketTitle">Market</h2>
+            <p data-i18n="marketSubtitle">Find products, compare prices, and connect to buyers.</p>
+          </div>
+          <div class="market-filter">
+            <input
+              id="marketSearch"
+              type="text"
+              placeholder="Search by crop or location"
+              data-i18n-placeholder="marketSearch"
+            />
+            <select id="marketType">
+              <option value="all" data-i18n="marketAll">All types</option>
+              <option value="crops" data-i18n="marketCrops">Crops</option>
+              <option value="livestock" data-i18n="marketLivestock">Livestock</option>
+            </select>
+            <input id="marketMin" type="number" placeholder="Min price" data-i18n-placeholder="marketMin" />
+            <input id="marketMax" type="number" placeholder="Max price" data-i18n-placeholder="marketMax" />
+          </div>
+          <div class="cards market-cards" id="marketCards"></div>
+          <button class="primary-btn view-all-btn" type="button" data-i18n="marketViewAll">
+            View All Products
+          </button>
+        </div>
+      </section>
+
+
+      <section id="experts" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h2 data-i18n="expertsTitle">Experts</h2>
+            <p data-i18n="expertsSubtitle">
+              Reach agronomists and livestock advisors for quick support.
+            </p>
+          </div>
+          <div class="expert-scroll" id="expertCards"></div>
+        </div>
+      </section>
+
+      <section id="ask" class="section section-alt">
+        <div class="container">
+          <div class="section-header">
+            <h2 data-i18n="askTitle">Ask Questions</h2>
+            <p data-i18n="askSubtitle">Send your question and get practical guidance.</p>
+          </div>
+          <div class="ask-grid">
+            <div class="assistant">
+              <div class="assistant-log" id="assistantLog" aria-live="polite"></div>
+              <form id="assistantForm" class="assistant-form">
+                <input
+                  id="assistantName"
+                  type="text"
+                  placeholder="Your name"
+                  data-i18n-placeholder="askName"
+                  required
+                />
+                <input
+                  id="assistantInput"
+                  type="text"
+                  placeholder="Ask about crops, chemicals, or market..."
+                  aria-label="Farming question"
+                  data-i18n-placeholder="askQuestion"
+                  required
+                />
+                <button class="primary-btn" type="submit" data-i18n="askSubmit">Submit</button>
+              </form>
+            </div>
+            <div class="chat-bubble">
+              <h3 data-i18n="chatTitle">YegnaFarm Chatbot</h3>
+              <p data-i18n="chatSubtitle">Ask quick questions and get instant farming tips.</p>
+              <div class="chat-log" id="chatBubbleLog" aria-live="polite"></div>
+              <input
+                id="chatBubbleInput"
+                type="text"
+                placeholder="Type your question..."
+                data-i18n-placeholder="chatPlaceholder"
+              />
+              <button class="primary-btn" id="chatBubbleSend" type="button" data-i18n="chatAsk">
+                Ask Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section pwa-note">
+        <div class="container">
+          <h2>Install & Offline</h2>
+          <p>Farmers can add YegnaFarm to the home screen and use cached guides offline.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-content">
+        <div class="footer-brand">
+          <img class="footer-logo" src="assets/logo.png" alt="YegnaFarm logo" />
+          <span data-i18n="footerCopyright">© 2026 YegnaFarm. All rights reserved.</span>
+        </div>
+        <div class="footer-links">
+          <a href="#home" data-i18n="navHome">Home</a>
+          <a href="#guides" data-i18n="navGuides">Guides</a>
+          <a href="#market" data-i18n="navMarket">Market</a>
+          <a href="#experts" data-i18n="navExperts">Experts</a>
+        </div>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook">Facebook</a>
+          <a href="#" aria-label="WhatsApp">WhatsApp</a>
+          <a href="#" aria-label="Telegram">Telegram</a>
+        </div>
+        <div class="footer-newsletter">
+          <input type="email" placeholder="Email for updates" data-i18n-placeholder="footerEmail" />
+          <button class="primary-btn" type="button" data-i18n="footerSubscribe">Subscribe</button>
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/yegna-api.js"></script>
+    <script src="js/ui-toast.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

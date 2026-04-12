@@ -1,0 +1,137 @@
+const { getPool } = require("../db/pool");
+
+async function createQuestion({ farmerId, guestName, body, cropHint }) {
+  const { rows } = await getPool().query(
+    `INSERT INTO farmer_questions (farmer_id, guest_name, body, crop_hint)
+     VALUES ($1, $2, $3, $4)
+     RETURNING id, farmer_id, guest_name, body, crop_hint, status, created_at`,
+    [farmerId || null, guestName || null, body, cropHint || null]
+  );
+  return rows[0];
+}
+
+async function listQuestions({ status, limit = 100 }) {
+  const pool = getPool();
+  const lim = Math.min(Number(limit) || 100, 500);
+  if (status) {
+    const { rows } = await pool.query(
+      `SELECT fq.*, u.full_name AS farmer_name, u.email AS farmer_email
+       FROM farmer_questions fq
+       LEFT JOIN users u ON u.id = fq.farmer_id
+       WHERE fq.status = $1
+       ORDER BY fq.created_at DESC
+       LIMIT $2`,
+      [status, lim]
+    );
+    return rows;
+  }
+  const { rows } = await pool.query(
+    `SELECT fq.*, u.full_name AS farmer_name, u.email AS farmer_email
+     FROM farmer_questions fq
+     LEFT JOIN users u ON u.id = fq.farmer_id
+     ORDER BY fq.created_at DESC
+     LIMIT $1`,
+    [lim]
+  );
+  return rows;
+}
+
+async function getQuestionById(id) {
+  const { rows } = await getPool().query("SELECT * FROM farmer_questions WHERE id = $1", [id]);
+  return rows[0] || null;
+}
+
+async function addAnswer({ questionId, expertId, body }) {
+  const pool = getPool();
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const qRes = await client.query("SELECT * FROM farmer_questions WHERE id = $1 FOR UPDATE", [questionId]);
+    const q = qRes.rows[0];
+    if (!q) {
+      await client.query("ROLLBACK");
+      return { error: "not_found" };
+    }
+    if (q.status === "answered") {
+      await client.query("ROLLBACK");
+      return { error: "already_answered" };
+    }
+    const aRes = await client.query(
+      `INSERT INTO expert_answers (question_id, expert_id, body) VALUES ($1, $2, $3)
+       RETURNING *`,
+      [questionId, expertId, body]
+    );
+    await client.query(
+      `UPDATE farmer_questions SET status = 'answered', answered_at = NOW(), assigned_expert_id = $2 WHERE id = $1`,
+      [questionId, expertId]
+    );
+    await client.query("COMMIT");
+    return { answer: aRes.rows[0] };
+  } catch (e) {
+    await client.query("ROLLBACK");
+    throw e;
+  } finally {
+    client.release();
+  }
+}
+
+async function addRating({ answerId, userId, stars }) {
+  const { rows } = await getPool().query(
+    `INSERT INTO answer_ratings (answer_id, user_id, stars) VALUES ($1, $2, $3)
+     ON CONFLICT (answer_id, user_id) DO UPDATE SET stars = EXCLUDED.stars
+     RETURNING *`,
+    [answerId, userId, stars]
+  );
+  return rows[0];
+}
+
+async function getAnswersForQuestion(questionId) {
+  const { rows } = await getPool().query(
+    `SELECT ea.*, u.full_name AS expert_name, u.verified_expert
+     FROM expert_answers ea
+     JOIN users u ON u.id = ea.expert_id
+     WHERE ea.question_id = $1
+     ORDER BY ea.created_at ASC`,
+    [questionId]
+  );
+  return rows;
+}
+
+async function dashboardCounts() {
+  const pool = getPool();
+  const today = new Date().toISOString().slice(0, 10);
+  const [pending, answeredToday, experts, total] = await Promise.all([
+    pool.query(`SELECT COUNT(*)::int AS c FROM farmer_questions WHERE status = 'pending'`),
+    pool.query(
+      `SELECT COUNT(*)::int AS c FROM farmer_questions WHERE status = 'answered' AND answered_at::date = $1::date`,
+      [today]
+    ),
+    pool.query(`SELECT COUNT(*)::int AS c FROM users WHERE role = 'expert'`),
+    pool.query(`SELECT COUNT(*)::int AS c FROM farmer_questions`),
+  ]);
+  return {
+    pendingQuestions: pending.rows[0].c,
+    answeredToday: answeredToday.rows[0].c,
+    activeExperts: experts.rows[0].c,
+    totalQuestions: total.rows[0].c,
+  };
+}
+
+async function analyticsOverview() {
+  const pool = getPool();
+  const { rows } = await pool.query(`
+    SELECT body, created_at FROM farmer_questions ORDER BY created_at DESC LIMIT 500
+  `);
+  return { recentQuestions: rows.length, sample: rows.slice(0, 20) };
+}
+
+module.exports = {
+  createQuestion,
+  listQuestions,
+  getQuestionById,
+  addAnswer,
+  addRating,
+  getAnswersForQuestion,
+  dashboardCounts,
+  analyticsOverview,
+};

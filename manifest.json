@@ -1,0 +1,20 @@
+{
+  "name": "YegnaFarm",
+  "short_name": "YegnaFarm",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#F1F8E9",
+  "theme_color": "#1B5E20",
+  "icons": [
+    {
+      "src": "assets/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

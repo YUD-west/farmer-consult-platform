@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Teff",
+    "price": 7800,
+    "unit": "ETB",
+    "location": "Addis Ababa",
+    "type": "crops"
+  },
+  {
+    "name": "Maize",
+    "price": 3500,
+    "unit": "ETB",
+    "location": "Bahir Dar",
+    "type": "crops"
+  },
+  {
+    "name": "Tomato",
+    "price": 420,
+    "unit": "ETB",
+    "location": "Adama",
+    "type": "crops"
+  },
+  {
+    "name": "Mangoes",
+    "price": 3,
+    "unit": "USD",
+    "location": "Hawassa",
+    "type": "crops"
+  },
+  {
+    "name": "Organic Fertilizer",
+    "price": 5,
+    "unit": "USD",
+    "location": "Dire Dawa",
+    "type": "crops"
+  }
+]

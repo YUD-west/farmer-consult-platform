@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1B5E20" />
+    <title>YegnaFarm Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <main class="chat-page">
+      <div class="chat-container">
+        <div class="chat-header-card">
+          <img class="footer-logo" src="assets/logo.png" alt="YegnaFarm logo" />
+          <div>
+            <h1 data-i18n="chatPageTitle">YegnaFarm Chatbot</h1>
+            <p data-i18n="chatPageSubtitle">Ask a farming question and get quick guidance.</p>
+          </div>
+        </div>
+        <div class="chat-box">
+          <select id="chatLanguage" class="lang-select" aria-label="Language">
+            <option value="en">English</option>
+            <option value="am">አማርኛ</option>
+            <option value="om">Afan Oromo</option>
+          </select>
+          <input type="text" id="question" placeholder="Ask YegnaChatBot" data-i18n-placeholder="chatInput" />
+          <button class="primary-btn" onclick="askChatBot()" data-i18n="chatAsk">Ask</button>
+          <div id="answer" class="chat-answer"></div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const translations = {
+        en: {
+          chatPageTitle: "YegnaFarm Chatbot",
+          chatPageSubtitle: "Ask a farming question and get quick guidance.",
+          chatInput: "Ask YegnaChatBot",
+          chatAsk: "Ask",
+        },
+        am: {
+          chatPageTitle: "የYegnaFarm ቻትቦት",
+          chatPageSubtitle: "የእርሻ ጥያቄ ይጠይቁ እና ፈጣን መመሪያ ያግኙ።",
+          chatInput: "የYegnaChatBot ጥያቄ ይጻፉ",
+          chatAsk: "ጠይቅ",
+        },
+        om: {
+          chatPageTitle: "YegnaFarm Chatbot",
+          chatPageSubtitle: "Gaaffii qonnaa gaafadhu gorsa saffisaa argadhu.",
+          chatInput: "Gaaffii YegnaChatBot barreessi",
+          chatAsk: "Gaafadhu",
+        },
+      };
+
+      const applyTranslations = (lang) => {
+        const dictionary = translations[lang] || translations.en;
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          const key = el.getAttribute("data-i18n");
+          if (dictionary[key]) el.textContent = dictionary[key];
+        });
+        document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+          const key = el.getAttribute("data-i18n-placeholder");
+          if (dictionary[key]) el.setAttribute("placeholder", dictionary[key]);
+        });
+      };
+
+      const chatLanguage = document.getElementById("chatLanguage");
+      const savedLang = localStorage.getItem("yegnafarm_lang") || "en";
+      chatLanguage.value = savedLang;
+      applyTranslations(savedLang);
+      chatLanguage.addEventListener("change", (event) => {
+        const lang = event.target.value;
+        localStorage.setItem("yegnafarm_lang", lang);
+        applyTranslations(lang);
+      });
+
+      async function askChatBot() {
+        const question = document.getElementById("question").value;
+        const res = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question }),
+        });
+        const data = await res.json();
+        document.getElementById("answer").innerText = data.answer;
+      }
+    </script>
+  </body>
+</html>

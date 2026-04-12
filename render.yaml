@@ -1,0 +1,13 @@
+# Render Blueprint — connect this repo in the Render dashboard (New + Blueprint).
+# Set secrets in the dashboard: DATABASE_URL, JWT_SECRET, OPENAI_API_KEY (optional), FRONTEND_ORIGIN.
+services:
+  - type: web
+    name: yegnafarm
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
