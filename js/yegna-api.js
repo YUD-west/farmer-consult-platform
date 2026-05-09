@@ -1,9 +1,24 @@
 (function () {
   const TOKEN_KEY = "yegnafarm_token";
+  const DEFAULT_API_ORIGIN = "https://farmer-consult-platform.onrender.com";
+
+  const resolveApiOrigin = () =>
+    String(
+      window.YEGNA_API_ORIGIN ||
+        window.YEGNAFARM_API_ORIGIN ||
+        DEFAULT_API_ORIGIN
+    ).replace(/\/$/, "");
 
   window.YegnaAPI = {
     TOKEN_KEY,
     basePath: "/api/v1",
+    apiOrigin: resolveApiOrigin(),
+
+    url(path) {
+      if (path.startsWith("http")) return path;
+      const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+      return `${this.apiOrigin}${normalizedPath}`;
+    },
 
     getToken() {
       return localStorage.getItem(TOKEN_KEY);
@@ -15,7 +30,7 @@
     },
 
     async request(path, options = {}) {
-      const url = path.startsWith("http") ? path : this.basePath + path;
+      const url = path.startsWith("http") ? path : this.url(this.basePath + path);
       const headers = {
         Accept: "application/json",
         ...(options.headers || {}),

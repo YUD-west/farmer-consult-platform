@@ -1,3 +1,18 @@
+const DEFAULT_API_ORIGIN = "https://farmer-consult-platform.onrender.com";
+
+const apiOrigin = (() => {
+  const helperOrigin = window.YegnaAPI?.apiOrigin;
+  const explicitOrigin =
+    window.YEGNA_API_ORIGIN || window.YEGNAFARM_API_ORIGIN || helperOrigin || DEFAULT_API_ORIGIN;
+  return String(explicitOrigin).replace(/\/$/, "");
+})();
+
+const apiUrl = (path) => {
+  if (path.startsWith("http")) return path;
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${apiOrigin}${normalizedPath}`;
+};
+
 const guideImageMap = {
   Cereals:
     "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80",
@@ -176,7 +191,7 @@ const languageSelect = document.getElementById("languageSelect");
 
 const loadGuidesData = async () => {
   try {
-    const apiRes = await fetch("/api/v1/guides");
+    const apiRes = await fetch(apiUrl("/api/v1/guides"));
     if (apiRes.ok) {
       const data = await apiRes.json();
       guideData = (data.families || []).map((family) => ({
@@ -209,7 +224,7 @@ const loadGuidesData = async () => {
 
 const loadMarketData = async () => {
   try {
-    const response = await fetch("/market-data");
+    const response = await fetch(apiUrl("/market-data"));
     if (!response.ok) return;
     const data = await response.json();
     if (!Array.isArray(data) || data.length === 0) return;
@@ -324,7 +339,7 @@ const loadDashboardStats = async () => {
     return;
   }
   try {
-    const response = await fetch("/dashboard-stats");
+    const response = await fetch(apiUrl("/dashboard-stats"));
     if (!response.ok) return;
     const data = await response.json();
     dashboardStatPending.textContent = data.pendingQuestions ?? "0";
@@ -385,7 +400,7 @@ const fetchBackendResponse = async (message) => {
   const lang = (localStorage.getItem("yegnafarm_lang") || "en").slice(0, 2);
   const language = lang === "am" ? "am" : lang === "om" ? "om" : "en";
   try {
-    const response = await fetch("/api/v1/ai/chat", {
+    const response = await fetch(apiUrl("/api/v1/ai/chat"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question: message, language }),
@@ -397,7 +412,7 @@ const fetchBackendResponse = async (message) => {
     /* fall through */
   }
   try {
-    const response = await fetch("/ask", {
+    const response = await fetch(apiUrl("/ask"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question: message, language }),

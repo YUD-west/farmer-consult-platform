@@ -37,6 +37,7 @@
       </div>
     </main>
 
+    <script src="js/yegna-api.js"></script>
     <script>
       const translations = {
         en: {
@@ -72,6 +73,16 @@
       };
 
       const chatLanguage = document.getElementById("chatLanguage");
+      const apiUrl = (path) => {
+        if (window.YegnaAPI && typeof window.YegnaAPI.url === "function") {
+          return window.YegnaAPI.url(path);
+        }
+        const origin = "https://farmer-consult-platform.onrender.com";
+        if (path.startsWith("http")) return path;
+        const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+        return `${origin}${normalizedPath}`;
+      };
+
       const savedLang = localStorage.getItem("yegnafarm_lang") || "en";
       chatLanguage.value = savedLang;
       applyTranslations(savedLang);
@@ -82,14 +93,39 @@
       });
 
       async function askChatBot() {
-        const question = document.getElementById("question").value;
-        const res = await fetch("/ask", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question }),
-        });
-        const data = await res.json();
-        document.getElementById("answer").innerText = data.answer;
+        const question = document.getElementById("question").value.trim();
+        if (!question) return;
+        const language = chatLanguage.value || "en";
+        const body = JSON.stringify({ question, language });
+        const primaryUrl = apiUrl("/api/v1/ai/chat");
+        const fallbackUrl = apiUrl("/ask");
+
+        try {
+          const res = await fetch(primaryUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body,
+          });
+          if (res.ok) {
+            const data = await res.json();
+            document.getElementById("answer").innerText = data.answer || "No answer returned.";
+            return;
+          }
+        } catch (error) {
+          // Fall through to the legacy endpoint.
+        }
+
+        try {
+          const res = await fetch(fallbackUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body,
+          });
+          const data = await res.json();
+          document.getElementById("answer").innerText = data.answer || "No answer returned.";
+        } catch (error) {
+          document.getElementById("answer").innerText = "Sorry, the chat service is unavailable right now.";
+        }
       }
     </script>
   </body>
