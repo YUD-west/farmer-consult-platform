@@ -224,7 +224,7 @@ function HomePage() {
         ) : (
           <span className="text-red-800">
             Cannot reach backend. In Vercel set{" "}
-            <code className="rounded bg-red-50 px-1">VITE_API_URL=https://farmer-consult-platform.onrender.com</code>{" "}
+            <code className="rounded bg-red-50 px-1">VITE_API_URL=https://farmer-consult-platform-1.onrender.com</code>{" "}
             and redeploy.
           </span>
         )}

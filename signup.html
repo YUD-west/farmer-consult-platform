@@ -1,108 +1,216 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#1B5E20" />
-    <meta name="yegna-api-origin" content="https://farmer-consult-platform.onrender.com" />
-    <title>YegnaFarm - Sign Up</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="css/style.css" />
-    <link rel="manifest" href="manifest.json" />
-  </head>
-  <body>
-    <header class="site-header">
-      <div class="container header-content">
-        <a class="brand" href="index.html" aria-label="YegnaFarm home">
-          <img class="brand-logo" src="assets/logo.png" alt="YegnaFarm logo" />
-          <div class="brand-text">
-            <span class="brand-mark">YegnaFarm</span>
-            <span class="tagline">Digital agriculture advisor for Ethiopia</span>
-          </div>
-        </a>
-        <nav class="nav-links">
-          <a href="index.html">Home</a>
-          <a href="crop-guide.html">Guides</a>
-          <a href="market.html">Market</a>
-          <a href="dashboard.html">Experts</a>
-          <a href="upload.html">Ask Questions</a>
-        </nav>
-      </div>
-    </header>
-
-    <main class="page-main">
-      <section class="page-hero">
-        <div class="container">
-          <h1>Create Your Account</h1>
-          <p>Join YegnaFarm to get personalized guidance and market updates.</p>
-        </div>
-      </section>
-      <section class="section section-alt">
-        <div class="container auth-card">
-          <form class="auth-form" id="registerForm">
-            <label>
-              Full Name
-              <input id="registerFullName" type="text" placeholder="Your full name" required />
-            </label>
-            <label>
-              Email
-              <input id="registerEmail" type="email" placeholder="you@example.com" required />
-            </label>
-            <label>
-              Phone Number
-              <input id="registerPhone" type="tel" placeholder="e.g. +251..." />
-            </label>
-            <label>
-              Region
-              <input id="registerRegion" type="text" placeholder="Region / Zone" />
-            </label>
-            <label>
-              Password
-              <input
-                id="registerPassword"
-                type="password"
-                placeholder="Create a password (min 8 chars)"
-                minlength="8"
-                required
-              />
-            </label>
-            <button class="primary-btn" id="registerSubmitBtn" type="submit">Sign Up</button>
-          </form>
-          <form class="auth-form auth-form--secondary" id="loginForm">
-            <h3>Already have an account?</h3>
-            <label>
-              Email
-              <input id="loginEmail" type="email" placeholder="you@example.com" required />
-            </label>
-            <label>
-              Password
-              <input id="loginPassword" type="password" placeholder="Your password" required />
-            </label>
-            <button class="secondary-btn" id="loginSubmitBtn" type="submit">Log In</button>
-          </form>
-          <p class="upload-note">
-            Your session is stored locally after login or signup. Experts can then open the dashboard.
-          </p>
-        </div>
-      </section>
-    </main>
-
-    <footer class="site-footer">
-      <div class="container footer-content">
-        <div class="footer-brand">
-          <img class="footer-logo" src="assets/logo.png" alt="YegnaFarm logo" />
-          <span>© 2026 YegnaFarm. All rights reserved.</span>
-        </div>
-      </div>
-    </footer>
-    <script src="js/api-config.js"></script>
-    <script src="js/yegna-api.js"></script>
-    <script src="js/ui-toast.js"></script>
-    <script src="js/auth-page.js"></script>
-  </body>
-</html>
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta name="theme-color" content="#1B5E20" />
+
+    <meta name="yegna-api-origin" content="https://farmer-consult-platform-1.onrender.com" />
+
+    <title>YegnaFarm - Sign Up</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap"
+
+      rel="stylesheet"
+
+    />
+
+    <link rel="stylesheet" href="css/style.css" />
+
+    <link rel="manifest" href="manifest.json" />
+
+  </head>
+
+  <body>
+
+    <header class="site-header">
+
+      <div class="container header-content">
+
+        <a class="brand" href="index.html" aria-label="YegnaFarm home">
+
+          <img class="brand-logo" src="assets/logo.png" alt="YegnaFarm logo" />
+
+          <div class="brand-text">
+
+            <span class="brand-mark">YegnaFarm</span>
+
+            <span class="tagline">Digital agriculture advisor for Ethiopia</span>
+
+          </div>
+
+        </a>
+
+        <nav class="nav-links">
+
+          <a href="index.html">Home</a>
+
+          <a href="crop-guide.html">Guides</a>
+
+          <a href="market.html">Market</a>
+
+          <a href="dashboard.html">Experts</a>
+
+          <a href="upload.html">Ask Questions</a>
+
+        </nav>
+
+      </div>
+
+    </header>
+
+
+
+    <main class="page-main">
+
+      <section class="page-hero">
+
+        <div class="container">
+
+          <h1>Create Your Account</h1>
+
+          <p>Join YegnaFarm to get personalized guidance and market updates.</p>
+
+        </div>
+
+      </section>
+
+      <section class="section section-alt">
+
+        <div class="container auth-card">
+
+          <form class="auth-form" id="registerForm">
+
+            <label>
+
+              Full Name
+
+              <input id="registerFullName" type="text" placeholder="Your full name" required />
+
+            </label>
+
+            <label>
+
+              Email
+
+              <input id="registerEmail" type="email" placeholder="you@example.com" required />
+
+            </label>
+
+            <label>
+
+              Phone Number
+
+              <input id="registerPhone" type="tel" placeholder="e.g. +251..." />
+
+            </label>
+
+            <label>
+
+              Region
+
+              <input id="registerRegion" type="text" placeholder="Region / Zone" />
+
+            </label>
+
+            <label>
+
+              Password
+
+              <input
+
+                id="registerPassword"
+
+                type="password"
+
+                placeholder="Create a password (min 8 chars)"
+
+                minlength="8"
+
+                required
+
+              />
+
+            </label>
+
+            <button class="primary-btn" id="registerSubmitBtn" type="submit">Sign Up</button>
+
+          </form>
+
+          <form class="auth-form auth-form--secondary" id="loginForm">
+
+            <h3>Already have an account?</h3>
+
+            <label>
+
+              Email
+
+              <input id="loginEmail" type="email" placeholder="you@example.com" required />
+
+            </label>
+
+            <label>
+
+              Password
+
+              <input id="loginPassword" type="password" placeholder="Your password" required />
+
+            </label>
+
+            <button class="secondary-btn" id="loginSubmitBtn" type="submit">Log In</button>
+
+          </form>
+
+          <p class="upload-note">
+
+            Your session is stored locally after login or signup. Experts can then open the dashboard.
+
+          </p>
+
+        </div>
+
+      </section>
+
+    </main>
+
+
+
+    <footer class="site-footer">
+
+      <div class="container footer-content">
+
+        <div class="footer-brand">
+
+          <img class="footer-logo" src="assets/logo.png" alt="YegnaFarm logo" />
+
+          <span>© 2026 YegnaFarm. All rights reserved.</span>
+
+        </div>
+
+      </div>
+
+    </footer>
+
+    <script src="js/api-config.js"></script>
+
+    <script src="js/yegna-api.js"></script>
+
+    <script src="js/ui-toast.js"></script>
+
+    <script src="js/auth-page.js"></script>
+
+  </body>
+
+</html>
+
