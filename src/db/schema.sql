@@ -95,9 +95,22 @@ CREATE TABLE ai_response_cache (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE ai_prompt_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  query TEXT NOT NULL,
+  response TEXT NOT NULL,
+  prompt_version VARCHAR(16) NOT NULL DEFAULT 'v2.1',
+  event_ts TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  region VARCHAR(100),
+  season VARCHAR(32),
+  source VARCHAR(64),
+  used_openai BOOLEAN NOT NULL DEFAULT FALSE
+);
+
 CREATE INDEX idx_farmer_questions_status ON farmer_questions (status);
 CREATE INDEX idx_farmer_questions_created ON farmer_questions (created_at DESC);
 CREATE INDEX idx_market_products_active ON market_products (active);
 CREATE INDEX idx_market_products_region ON market_products (region);
 CREATE INDEX idx_market_products_location ON market_products (location);
 CREATE INDEX idx_market_products_type ON market_products (type);
+CREATE INDEX idx_ai_prompt_logs_event_ts ON ai_prompt_logs (event_ts DESC);

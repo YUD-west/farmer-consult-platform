@@ -20,6 +20,13 @@
    * @param {string} [cfg.cameraStatusId]
    */
   function initYegnaImageDetection(cfg) {
+    const CAPTURE_STORAGE_KEY = "yegnafarm_pending_capture_image";
+    const autoStartCamera =
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("camera") === "1";
+    const prefillCapturedImage =
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("prefill") === "1";
     const imageInput = document.getElementById(cfg.imageInputId);
     const previewImage = document.getElementById(cfg.previewImageId);
     const analyzeBtn = document.getElementById(cfg.analyzeBtnId);
@@ -91,6 +98,16 @@
         applyPreviewFromDataUrl(event.target.result);
       };
       reader.readAsDataURL(file);
+    };
+
+    const loadPendingCapture = () => {
+      if (!prefillCapturedImage || typeof sessionStorage === "undefined") return false;
+      const dataUrl = sessionStorage.getItem(CAPTURE_STORAGE_KEY);
+      if (!dataUrl) return false;
+      applyPreviewFromDataUrl(dataUrl);
+      sessionStorage.removeItem(CAPTURE_STORAGE_KEY);
+      resultText.textContent = "Captured photo loaded. Tap Analyze Image.";
+      return true;
     };
 
     /**
@@ -194,7 +211,22 @@
       setCameraMessage("Photo captured. Tap Analyze image when ready.");
     };
 
-    const loadModel = () => {
+    const ensureStableTfBackend = async () => {
+      if (!global.tf) return;
+      try {
+        await global.tf.setBackend("webgl");
+        await global.tf.ready();
+      } catch (webglError) {
+        try {
+          await global.tf.setBackend("cpu");
+          await global.tf.ready();
+        } catch (cpuError) {
+          // keep default backend if explicit selection fails
+        }
+      }
+    };
+
+    const loadModel = async () => {
       if (!navigator.onLine) {
         resultText.textContent = "No internet. Connect once to load the model.";
         return;
@@ -203,6 +235,7 @@
         resultText.textContent = "AI library failed to load. Refresh the page.";
         return;
       }
+      await ensureStableTfBackend();
       resultText.textContent = "Loading lightweight AI model...";
       analyzeBtn.disabled = true;
       loadingIndicator.style.display = "flex";
@@ -224,6 +257,8 @@
       if (!file) return;
       showPreview(file);
     });
+
+    loadPendingCapture();
 
     analyzeBtn.addEventListener("click", () => {
       if (!classifier) {
@@ -267,6 +302,11 @@
         setCameraMessage("Camera not available in this browser.");
       } else {
         setCameraMessage("Allow camera access when you tap Start camera.");
+        if (autoStartCamera) {
+          setTimeout(() => {
+            startCamera();
+          }, 120);
+        }
       }
     }
 

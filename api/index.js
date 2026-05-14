@@ -1,6 +1,8 @@
 /**
- * Vercel serverless entry: all HTTP traffic is rewritten here; Express serves API + static HTML.
+ * Vercel serverless entry only — must default-export an Express app (a request listener).
+ * Do not use src/app.js: Vercel treats that path as a special entry and rejects { createApp } exports.
  */
-const { createApp } = require("../src/app");
+const { createApp } = require("../src/expressApp");
 
-module.exports = createApp();
+const app = createApp();
+module.exports = app;

@@ -6,9 +6,15 @@
   "scripts": {
     "start": "node server.js",
     "migrate": "node scripts/migrate.js",
+    "migrate:prompt-logs": "node scripts/migrate-prompt-logs.js",
     "seed": "node scripts/seed-from-json.js",
     "create-admin": "node scripts/create-admin.js",
-    "dev": "node server.js"
+    "preflight": "node scripts/preflight.js",
+    "dev": "node server.js",
+    "build:frontend": "npm --prefix frontend install && npm --prefix frontend run build"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -19,11 +25,16 @@
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
-    "multer": "^1.4.5-lts.1",
+    "multer": "^2.1.1",
     "pg": "^8.13.1",
     "zod": "^3.24.1"
   },
-  "keywords": ["agriculture", "ethiopia", "farming", "ai"],
+  "keywords": [
+    "agriculture",
+    "ethiopia",
+    "farming",
+    "ai"
+  ],
   "author": "",
   "license": "ISC"
 }

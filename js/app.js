@@ -1,6 +1,10 @@
 const DEFAULT_API_ORIGIN = "https://farmer-consult-platform.onrender.com";
 
 const apiOrigin = (() => {
+  if (typeof window === "undefined") return DEFAULT_API_ORIGIN.replace(/\/$/, "");
+  if (typeof window.__YEGNA_API_ORIGIN__ === "string") {
+    return String(window.__YEGNA_API_ORIGIN__).trim().replace(/\/$/, "");
+  }
   const helperOrigin = window.YegnaAPI?.apiOrigin;
   const explicitOrigin =
     window.YEGNA_API_ORIGIN || window.YEGNAFARM_API_ORIGIN || helperOrigin || DEFAULT_API_ORIGIN;
@@ -12,6 +16,15 @@ const apiUrl = (path) => {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   return `${apiOrigin}${normalizedPath}`;
 };
+
+/** Resolve product image URL when API returns a path like /uploads/... (needs API origin on Vercel). */
+function resolveMarketImageSrc(raw) {
+  const s = raw && String(raw).trim() ? String(raw).trim() : "";
+  if (!s) return "assets/maize.png";
+  if (s.startsWith("http://") || s.startsWith("https://")) return s;
+  if (s.startsWith("/")) return apiUrl(s);
+  return s;
+}
 
 const guideImageMap = {
   Cereals:
@@ -148,6 +161,11 @@ const responseLibrary = [
       "For tomato, rotate crops, remove infected leaves, and use botanical sprays or approved pesticides. Keep plants well-spaced for airflow.",
   },
   {
+    keywords: ["insect", "insects", "aphid", "armyworm", "worm", "caterpillar", "whitefly"],
+    response:
+      "- Immediate Action: Inspect leaf undersides and crop tops now; remove heavily infested leaves and crush visible insects.\n- Next 7 Days Plan: Scout early morning daily, keep field weed-free, and install yellow sticky traps where possible.\n- Control Option: Start with soap/neem spray or other approved biopesticide; only escalate to registered pesticide if infestation rises.\n- Safety Warning: Follow label dose exactly, wear gloves/mask, and avoid spraying near water sources or in strong wind.\nSource: [YegnaFarm Advisory - Pest Management]",
+  },
+  {
     keywords: ["onion", "irrigation"],
     response:
       "Onion prefers light, frequent irrigation. Avoid waterlogging and stop irrigation 10-14 days before harvest for better storage.",
@@ -181,13 +199,99 @@ const assistantForm = document.getElementById("assistantForm");
 const assistantName = document.getElementById("assistantName");
 const assistantInput = document.getElementById("assistantInput");
 const assistantLog = document.getElementById("assistantLog");
+const askCameraBtn = document.getElementById("askCameraBtn");
+const askCameraInput = document.getElementById("askCameraInput");
 
 const navToggle = document.getElementById("navToggle");
 const navLinks = document.getElementById("navLinks");
 const chatBubbleLog = document.getElementById("chatBubbleLog");
 const chatBubbleInput = document.getElementById("chatBubbleInput");
 const chatBubbleSend = document.getElementById("chatBubbleSend");
+const chatModeHint = document.getElementById("chatModeHint");
 const languageSelect = document.getElementById("languageSelect");
+const offlineQueueHint = document.getElementById("offlineQueueHint");
+const OFFLINE_QUESTION_QUEUE_KEY = "yegnafarm_offline_question_queue";
+const ASK_CAPTURE_STORAGE_KEY = "yegnafarm_pending_capture_image";
+
+const showToast = (message, variant = "info", ms = 4200) => {
+  if (typeof window.showYegnaToast === "function") {
+    window.showYegnaToast(message, variant, ms);
+  }
+};
+
+const loadQueuedQuestions = () => {
+  try {
+    const raw = localStorage.getItem(OFFLINE_QUESTION_QUEUE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+};
+
+const updateOfflineQueueHint = () => {
+  if (!offlineQueueHint) return;
+  const queuedCount = loadQueuedQuestions().length;
+  if (queuedCount > 0) {
+    offlineQueueHint.hidden = false;
+    offlineQueueHint.textContent = `${queuedCount} question(s) waiting for internet sync.`;
+  } else {
+    offlineQueueHint.hidden = true;
+    offlineQueueHint.textContent = "";
+  }
+};
+
+const saveQueuedQuestions = (entries) => {
+  localStorage.setItem(OFFLINE_QUESTION_QUEUE_KEY, JSON.stringify(entries));
+  updateOfflineQueueHint();
+};
+
+const queueQuestionForSync = (entry) => {
+  const current = loadQueuedQuestions();
+  current.push(entry);
+  saveQueuedQuestions(current);
+};
+
+const submitQuestionToBackend = async ({ name, question }) => {
+  if (window.YegnaAPI?.request) {
+    return window.YegnaAPI.request("/questions", {
+      method: "POST",
+      body: {
+        body: question,
+        guestName: name || "Farmer",
+      },
+    });
+  }
+  return fetch(apiUrl("/ask-question"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, question }),
+  }).then(async (response) => {
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to submit question.");
+    }
+    return data;
+  });
+};
+
+const flushQueuedQuestions = async () => {
+  if (!navigator.onLine) return;
+  const queued = loadQueuedQuestions();
+  if (!queued.length) return;
+  const remaining = [];
+  for (const entry of queued) {
+    try {
+      await submitQuestionToBackend(entry);
+    } catch (error) {
+      remaining.push(entry);
+    }
+  }
+  saveQueuedQuestions(remaining);
+  if (!remaining.length) {
+    showToast("Offline questions synced.", "success", 2500);
+  }
+};
 
 const loadGuidesData = async () => {
   try {
@@ -313,8 +417,7 @@ const renderMarket = () => {
     const card = document.createElement("div");
     card.className = "card market-card";
     const unit = item.name === "Organic Fertilizer" ? "/bag" : "/kg";
-    const imgSrc =
-      item.image && String(item.image).trim() ? item.image : "assets/maize.png";
+    const imgSrc = resolveMarketImageSrc(item.image);
     card.innerHTML = `
       <img src="${imgSrc}" alt="${item.name}" loading="lazy" />
       <div class="card-body">
@@ -383,6 +486,18 @@ const addMessage = (role, name, text) => {
   if (chatBubbleLog) appendMessage(chatBubbleLog, role, name, text);
 };
 
+const updateChatModeHint = (mode) => {
+  const label =
+    mode === "backend"
+      ? "AI mode: Live backend response"
+      : "Offline guidance mode: Local advisory response";
+  if (chatModeHint) chatModeHint.textContent = label;
+  if (offlineQueueHint && !offlineQueueHint.hidden) return;
+  if (!offlineQueueHint) return;
+  offlineQueueHint.hidden = false;
+  offlineQueueHint.textContent = label;
+};
+
 const getResponse = (question) => {
   const query = question.toLowerCase();
   const guideMatch = findGuideResponse(query);
@@ -399,15 +514,23 @@ const getResponse = (question) => {
 const fetchBackendResponse = async (message) => {
   const lang = (localStorage.getItem("yegnafarm_lang") || "en").slice(0, 2);
   const language = lang === "am" ? "am" : lang === "om" ? "om" : "en";
+  const region =
+    localStorage.getItem("yegnafarm_region") ||
+    localStorage.getItem("region") ||
+    undefined;
+  const agroEcology =
+    localStorage.getItem("yegnafarm_agroEcology") ||
+    localStorage.getItem("yegnafarm_agro_ecology") ||
+    undefined;
   try {
     const response = await fetch(apiUrl("/api/v1/ai/chat"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: message, language }),
+      body: JSON.stringify({ question: message, language, region, agroEcology }),
     });
     if (!response.ok) return null;
     const data = await response.json();
-    return data.answer || null;
+    return data.answer ? { answer: data.answer, mode: "backend" } : null;
   } catch (error) {
     /* fall through */
   }
@@ -415,11 +538,11 @@ const fetchBackendResponse = async (message) => {
     const response = await fetch(apiUrl("/ask"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: message, language }),
+      body: JSON.stringify({ question: message, language, region, agroEcology }),
     });
     if (!response.ok) return null;
     const data = await response.json();
-    return data.answer || null;
+    return data.answer ? { answer: data.answer, mode: "backend" } : null;
   } catch (error) {
     return null;
   }
@@ -428,7 +551,7 @@ const fetchBackendResponse = async (message) => {
 const getChatResponse = async (question) => {
   const backendReply = await fetchBackendResponse(question);
   if (backendReply) return backendReply;
-  return getResponse(question);
+  return { answer: getResponse(question), mode: "offline" };
 };
 
 const findQuestionResponse = (query) => {
@@ -488,6 +611,40 @@ const generalAdviceBank = [
   "Use mulch to retain moisture and reduce weeds.",
 ];
 
+const agricultureKeywords = [
+  "crop",
+  "crops",
+  "farm",
+  "farming",
+  "agriculture",
+  "seed",
+  "plant",
+  "planting",
+  "harvest",
+  "soil",
+  "pest",
+  "insect",
+  "disease",
+  "irrigation",
+  "rain",
+  "fertilizer",
+  "teff",
+  "maize",
+  "wheat",
+  "barley",
+  "tomato",
+  "onion",
+  "potato",
+  "livestock",
+  "cattle",
+  "cow",
+  "goat",
+  "sheep",
+  "poultry",
+  "market",
+  "price",
+];
+
 const translations = {
   en: {
     navHome: "Home",
@@ -521,10 +678,13 @@ const translations = {
     askName: "Your name",
     askQuestion: "Ask about crops, chemicals, or market...",
     askSubmit: "Submit",
+    askCamera: "Take Photo",
+    askCameraNote: "Capture from camera and analyze instantly.",
     chatTitle: "YegnaFarm Chatbot",
     chatSubtitle: "Ask quick questions and get instant farming tips.",
     chatPlaceholder: "Type your question...",
     chatAsk: "Ask Now",
+    chatCamera: "Use Camera",
     footerEmail: "Email for updates",
     footerSubscribe: "Subscribe",
     footerCopyright: "© 2026 YegnaFarm. All rights reserved.",
@@ -561,10 +721,13 @@ const translations = {
     askName: "ስምዎ",
     askQuestion: "ስለ ሰብል ወይም ገበያ ጠይቁ...",
     askSubmit: "ላክ",
+    askCamera: "ፎቶ አንሳ",
+    askCameraNote: "ከካሜራ አንሳ እና በፍጥነት አስተካክል።",
     chatTitle: "የYegnaFarm ቻትቦት",
     chatSubtitle: "ፈጣን ጥያቄ ይጠይቁ።",
     chatPlaceholder: "ጥያቄዎን ይጻፉ...",
     chatAsk: "ጠይቅ",
+    chatCamera: "ካሜራ ተጠቀም",
     footerEmail: "ለዜና ኢሜይል",
     footerSubscribe: "ይመዝገቡ",
     footerCopyright: "© 2026 YegnaFarm. መብት የተጠበቀ።",
@@ -601,10 +764,13 @@ const translations = {
     askName: "Maqaa kee",
     askQuestion: "Midhaan, qoricha, gabaa irratti gaafadhu...",
     askSubmit: "Ergi",
+    askCamera: "Suuraa kaasi",
+    askCameraNote: "Kaameraadhaan kaasiitii saffisaan xiinxali.",
     chatTitle: "YegnaFarm Chatbot",
     chatSubtitle: "Gaaffii saffisaa gaafadhu.",
     chatPlaceholder: "Gaaffii kee barreessi...",
     chatAsk: "Gaafadhu",
+    chatCamera: "Kaamera fayyadami",
     footerEmail: "Imayilii odeeffannoo",
     footerSubscribe: "Galmaa'i",
     footerCopyright: "© 2026 YegnaFarm. Mirgi hunda eegamaa.",
@@ -634,6 +800,16 @@ const applyTranslations = (lang) => {
 };
 
 const getGeneralAdvice = (query) => {
+  if (
+    query.includes("insect") ||
+    query.includes("insects") ||
+    query.includes("aphid") ||
+    query.includes("armyworm") ||
+    query.includes("worm") ||
+    query.includes("whitefly")
+  ) {
+    return "- Immediate Action: Check 20-30 plants now, especially new leaves and undersides, and remove heavily infested parts.\n- Next 7 Days Plan: Monitor every day, keep the field clean, and record whether infestation is increasing or decreasing.\n- Control Option: Use botanical or biological control first; apply approved pesticide only when threshold is high.\n- Safety Warning: Use protective gear, spray at calm hours, and follow product label rate and pre-harvest interval.\nSource: [YegnaFarm Advisory - Insect Control]";
+  }
   if (query.includes("fertilizer")) {
     return "Use a balanced fertilizer at planting, then top-dress nitrogen during early growth. Mix with compost for better soil health.";
   }
@@ -642,6 +818,10 @@ const getGeneralAdvice = (query) => {
   }
   if (query.includes("pest") || query.includes("disease")) {
     return "Inspect weekly, remove affected leaves early, and use approved pesticides only when necessary. Rotate crops each season.";
+  }
+  const seemsAgricultureQuestion = agricultureKeywords.some((word) => query.includes(word));
+  if (seemsAgricultureQuestion) {
+    return "- Immediate Action: Share crop/livestock name, current growth stage, and your location so guidance can be tailored.\n- Next 7 Days Plan: Monitor field/livestock daily, record weather and symptoms, and compare changes after each action.\n- Practical Advice: Keep field hygiene, use clean tools, and prioritize low-risk integrated pest and soil management.\n- Safety Warning: For any chemical input, follow product label rate exactly and use protective gear.\nSource: [YegnaFarm Advisory - General Agriculture]";
   }
   const tip = generalAdviceBank[Math.floor(Math.random() * generalAdviceBank.length)];
   return `${defaultResponse} Quick tip: ${tip}`;
@@ -654,9 +834,37 @@ if (assistantForm) {
     const question = assistantInput.value.trim();
     if (!question) return;
     addMessage("user", name, question);
+    try {
+      await submitQuestionToBackend({ name, question });
+    } catch (error) {
+      queueQuestionForSync({ name, question });
+      showToast("Saved offline. It will sync automatically when internet is back.", "info");
+    }
     const response = await getChatResponse(question);
-    addMessage("ai", "AI assistant", response);
+    updateChatModeHint(response.mode);
+    addMessage("ai", "AI assistant", response.answer);
     assistantInput.value = "";
+  });
+}
+
+if (askCameraBtn && askCameraInput) {
+  askCameraBtn.addEventListener("click", () => {
+    askCameraInput.click();
+  });
+
+  askCameraInput.addEventListener("change", () => {
+    const file = askCameraInput.files && askCameraInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        sessionStorage.setItem(ASK_CAPTURE_STORAGE_KEY, String(event.target?.result || ""));
+      } catch (error) {
+        // ignore storage errors and just open camera page
+      }
+      window.location.href = "upload.html?camera=1&prefill=1";
+    };
+    reader.readAsDataURL(file);
   });
 }
 
@@ -666,7 +874,8 @@ const handleChatBubbleSubmit = async () => {
   if (!question) return;
   addMessage("user", "Farmer", question);
   const response = await getChatResponse(question);
-  addMessage("ai", "AI assistant", response);
+  updateChatModeHint(response.mode);
+  addMessage("ai", "AI assistant", response.answer);
   chatBubbleInput.value = "";
 };
 
@@ -737,6 +946,7 @@ if ("serviceWorker" in navigator) {
 addMessage("ai", "AI assistant", "Selam! Ask me about crops, livestock, or market.");
 
 const init = async () => {
+  updateOfflineQueueHint();
   await loadGuidesData();
   await loadMarketData();
   if (!languageSelect) {
@@ -745,6 +955,11 @@ const init = async () => {
   renderMarket();
   renderExperts();
   await loadDashboardStats();
+  await flushQueuedQuestions();
 };
 
 init();
+
+window.addEventListener("online", () => {
+  flushQueuedQuestions();
+});

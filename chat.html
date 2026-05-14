@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#1B5E20" />
+    <meta name="yegna-api-origin" content="https://farmer-consult-platform.onrender.com" />
     <title>YegnaFarm Chatbot</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -37,6 +38,7 @@
       </div>
     </main>
 
+    <script src="js/api-config.js"></script>
     <script src="js/yegna-api.js"></script>
     <script>
       const translations = {
@@ -94,7 +96,11 @@
 
       async function askChatBot() {
         const question = document.getElementById("question").value.trim();
-        if (!question) return;
+        const answerEl = document.getElementById("answer");
+        if (!question) {
+          answerEl.innerText = "Please enter a question.";
+          return;
+        }
         const language = chatLanguage.value || "en";
         const body = JSON.stringify({ question, language });
         const primaryUrl = apiUrl("/api/v1/ai/chat");
@@ -107,8 +113,8 @@
             body,
           });
           if (res.ok) {
-            const data = await res.json();
-            document.getElementById("answer").innerText = data.answer || "No answer returned.";
+            const data = await res.json().catch(() => ({}));
+            answerEl.innerText = data.answer || data.error || "No answer returned.";
             return;
           }
         } catch (error) {
@@ -121,10 +127,14 @@
             headers: { "Content-Type": "application/json" },
             body,
           });
-          const data = await res.json();
-          document.getElementById("answer").innerText = data.answer || "No answer returned.";
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            answerEl.innerText = data.error || "Sorry, the chat service is unavailable right now.";
+            return;
+          }
+          answerEl.innerText = data.answer || "No answer returned.";
         } catch (error) {
-          document.getElementById("answer").innerText = "Sorry, the chat service is unavailable right now.";
+          answerEl.innerText = "Sorry, the chat service is unavailable right now.";
         }
       }
     </script>

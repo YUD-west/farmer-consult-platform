@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#1B5E20" />
+    <meta name="yegna-api-origin" content="https://farmer-consult-platform.onrender.com" />
     <title>YegnaFarm - Farmers Consulting Platform</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -48,20 +49,19 @@
         <div class="hero-overlay"></div>
         <div class="container hero-content">
           <div>
-            <h1 data-i18n="heroTitle">Smart Guidance for Every Farmer</h1>
+            <p class="hero-eyebrow">AI Powered. Ethiopia Focused.</p>
+            <h1 data-i18n="heroTitle">Smarter Farming. Stronger Futures.</h1>
             <p data-i18n="heroSubtitle">
-              Grow Smarter • Sell Better • Earn More
+              Grow with trusted crop guidance, market intelligence, and expert support designed for Ethiopian farmers.
             </p>
             <div class="hero-actions hero-actions-row">
-              <a class="cta-btn" href="chat.html" data-i18n="heroAskAi">Ask AI</a>
-              <a class="ghost-btn" href="crop-guide.html" data-i18n="heroBrowseCrops">Browse crops</a>
-              <a class="ghost-btn" href="market.html" data-i18n="heroSell">Market</a>
+              <a class="cta-btn" href="chat.html" data-i18n="heroAskAi">Get Started Free</a>
+              <a class="ghost-btn" href="market.html" data-i18n="heroBrowseCrops">Explore Marketplace</a>
             </div>
-            <p class="hero-secondary">
-              <button type="button" class="link-btn" data-scroll="#guides" data-i18n="heroCta">Guides overview</button>
-              <span aria-hidden="true"> · </span>
-              <button type="button" class="link-btn" data-scroll="#market" data-i18n="heroExplore">Scroll to prices</button>
-            </p>
+            <div class="hero-trust">
+              <div class="hero-avatars" aria-hidden="true"><span>AA</span><span>BD</span><span>HW</span></div>
+              <p>Trusted by farmers, buyers, and experts across Ethiopia</p>
+            </div>
           </div>
           <div class="hero-image">
             <img
@@ -69,6 +69,40 @@
               alt="Smiling farmer holding a tablet in farmland"
               loading="eager"
             />
+            <div class="hero-float hero-float-weather">Weather: 24°C • Light rain</div>
+            <div class="hero-float hero-float-ai">AI Tip: Split fertilizer this week</div>
+            <div class="hero-float hero-float-price">Teff trend: +4.2% this month</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Who We Serve</h2>
+            <p>Purpose-built experiences for every part of Ethiopia's agriculture ecosystem.</p>
+          </div>
+          <div class="cards serve-cards">
+            <article class="card serve-card"><div class="serve-icon">🌾</div><div class="card-body"><h3>For Farmers</h3><p>Get actionable advice on planting, pest control, irrigation, and harvest timing.</p></div></article>
+            <article class="card serve-card"><div class="serve-icon">🛒</div><div class="card-body"><h3>For Buyers</h3><p>Discover verified produce listings with location, quality, and market pricing insight.</p></div></article>
+            <article class="card serve-card"><div class="serve-icon">🧑‍🔬</div><div class="card-body"><h3>For Experts</h3><p>Share trusted recommendations and support farming communities at scale.</p></div></article>
+          </div>
+        </div>
+      </section>
+
+      <section id="services" class="section section-alt">
+        <div class="container">
+          <div class="section-header">
+            <h2>Services</h2>
+            <p>Everything needed to move from uncertainty to confident farm decisions.</p>
+          </div>
+          <div class="cards guide-cards">
+            <article class="card service-card"><div class="card-body"><h3>AI Crop Advisory</h3><p>Localized recommendations for sowing, nutrition, and crop health.</p></div></article>
+            <article class="card service-card"><div class="card-body"><h3>Weather Updates</h3><p>Plan activities with season-aware weather and risk warnings.</p></div></article>
+            <article class="card service-card"><div class="card-body"><h3>Market Prices</h3><p>Track price changes across regions to sell at better times.</p></div></article>
+            <article class="card service-card"><div class="card-body"><h3>Inputs & Machinery</h3><p>Find needed farm inputs and tools faster with verified suppliers.</p></div></article>
+            <article class="card service-card"><div class="card-body"><h3>Expert Consultation</h3><p>Connect with agronomists and livestock specialists for support.</p></div></article>
+            <article class="card service-card"><div class="card-body"><h3>Training & Resources</h3><p>Access practical guides and learning resources in simple language.</p></div></article>
           </div>
         </div>
       </section>
@@ -109,10 +143,15 @@
             <input id="marketMin" type="number" placeholder="Min price" data-i18n-placeholder="marketMin" />
             <input id="marketMax" type="number" placeholder="Max price" data-i18n-placeholder="marketMax" />
           </div>
-          <div class="cards market-cards" id="marketCards"></div>
-          <button class="primary-btn view-all-btn" type="button" data-i18n="marketViewAll">
-            View All Products
-          </button>
+          <div class="market-layout">
+            <div class="cards market-cards" id="marketCards"></div>
+            <aside class="market-join-card">
+              <h3>Join thousands of buyers and sellers</h3>
+              <p>List your products, compare trends, and expand your market reach with confidence.</p>
+              <a class="cta-btn" href="signup.html">Join Marketplace</a>
+            </aside>
+          </div>
+          <button class="primary-btn view-all-btn" type="button" data-i18n="marketViewAll">View All Products</button>
         </div>
       </section>
 
@@ -129,11 +168,31 @@
         </div>
       </section>
 
+      <section class="section section-alt">
+        <div class="container stats-testimonial">
+          <div class="stats-grid">
+            <article class="dashboard-card"><p>Active Farmers</p><strong class="dashboard-number">25K+</strong></article>
+            <article class="dashboard-card"><p>Verified Experts</p><strong class="dashboard-number">3K+</strong></article>
+            <article class="dashboard-card"><p>Happy Buyers</p><strong class="dashboard-number">8K+</strong></article>
+            <article class="dashboard-card"><p>Satisfaction Rate</p><strong class="dashboard-number">95%</strong></article>
+          </div>
+          <article class="testimonial-card">
+            <p class="badge">Farmer Story</p>
+            <blockquote>
+              "YegnaFarm helped me detect crop issues early and sell my produce at a better price. The advice feels practical and local."
+            </blockquote>
+            <p class="testimonial-author">- Tadesse, Wheat Farmer (Oromia)</p>
+            <div class="testimonial-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+          </article>
+        </div>
+      </section>
+
       <section id="ask" class="section section-alt">
         <div class="container">
           <div class="section-header">
             <h2 data-i18n="askTitle">Ask Questions</h2>
             <p data-i18n="askSubtitle">Send your question and get practical guidance.</p>
+            <p class="offline-queue-hint" id="offlineQueueHint" hidden></p>
           </div>
           <div class="ask-grid">
             <div class="assistant">
@@ -156,6 +215,26 @@
                 />
                 <button class="primary-btn" type="submit" data-i18n="askSubmit">Submit</button>
               </form>
+              <div class="ask-camera-tools">
+                <input
+                  id="askCameraInput"
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  hidden
+                />
+                <button
+                  class="secondary-btn"
+                  id="askCameraBtn"
+                  type="button"
+                  data-i18n="askCamera"
+                >
+                  Take Photo
+                </button>
+                <span class="ask-camera-note" data-i18n="askCameraNote">
+                  Capture from camera and analyze instantly.
+                </span>
+              </div>
             </div>
             <div class="chat-bubble">
               <h3 data-i18n="chatTitle">YegnaFarm Chatbot</h3>
@@ -170,15 +249,22 @@
               <button class="primary-btn" id="chatBubbleSend" type="button" data-i18n="chatAsk">
                 Ask Now
               </button>
+              <a class="secondary-btn" href="upload.html?camera=1" data-i18n="chatCamera">
+                Use Camera
+              </a>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="section pwa-note">
+      <section class="section pwa-note final-cta">
         <div class="container">
-          <h2>Install & Offline</h2>
-          <p>Farmers can add YegnaFarm to the home screen and use cached guides offline.</p>
+          <h2>Ready to grow smarter?</h2>
+          <p>Start with AI-powered guidance and connect to trusted markets and experts.</p>
+          <div class="hero-actions">
+            <a class="cta-btn" href="signup.html">Get Started Free</a>
+            <a class="ghost-btn" href="#market">Explore Marketplace</a>
+          </div>
         </div>
       </section>
     </main>
@@ -187,10 +273,11 @@
       <div class="container footer-content">
         <div class="footer-brand">
           <img class="footer-logo" src="assets/logo.png" alt="YegnaFarm logo" />
-          <span data-i18n="footerCopyright">© 2026 YegnaFarm. All rights reserved.</span>
+          <span data-i18n="footerCopyright">© 2026 YegnaFarm. All rights reserved. Made with ❤️ in Ethiopia.</span>
         </div>
         <div class="footer-links">
           <a href="#home" data-i18n="navHome">Home</a>
+          <a href="#services">Services</a>
           <a href="#guides" data-i18n="navGuides">Guides</a>
           <a href="#market" data-i18n="navMarket">Market</a>
           <a href="#experts" data-i18n="navExperts">Experts</a>
@@ -207,6 +294,7 @@
       </div>
     </footer>
 
+    <script src="js/api-config.js"></script>
     <script src="js/yegna-api.js"></script>
     <script src="js/ui-toast.js"></script>
     <script src="js/app.js"></script>

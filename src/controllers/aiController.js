@@ -3,11 +3,12 @@ const { recommend } = require("../services/recommendationsService");
 
 async function chat(req, res, next) {
   try {
-    const { question, region, language } = req.body;
+    const { question, region, language, agroEcology } = req.body;
     const result = await aiService.chat({
       question,
       region: region || req.user?.region,
       language: language || "en",
+      agroEcology: agroEcology || req.user?.agroEcology,
     });
     res.json(result);
   } catch (e) {

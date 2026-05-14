@@ -57,6 +57,7 @@ const marketUpdateSchema = z
 const chatSchema = z.object({
   question: z.string().min(1).max(4000),
   region: z.string().max(100).optional(),
+  agroEcology: z.string().max(100).optional(),
   language: z.enum(["en", "am", "om"]).optional(),
 });
 

@@ -97,6 +97,17 @@ npm start
 
 Open `http://localhost:3000/`
 
+Health checks:
+
+- `GET /health` -> app process is alive
+- `GET /health/db` -> app can reach PostgreSQL
+
+Before deployment, run:
+
+```bash
+npm run preflight
+```
+
 ---
 
 ## Folder structure (new modular backend)
@@ -104,7 +115,7 @@ Open `http://localhost:3000/`
 ```
 ├── server.js                 # Entry: env checks + listen
 ├── src/
-│   ├── app.js                # Express app: security, CORS, rate limits, routes, static
+│   ├── expressApp.js         # Express factory (not named app.js — Vercel reserves that path)
 │   ├── controllers/          # HTTP handlers (thin)
 │   ├── middleware/           # auth, validate (Zod), errors, multer uploads
 │   ├── routes/

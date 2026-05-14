@@ -1,14 +1,18 @@
-const CACHE_NAME = "yegnafarm-v2";
+const CACHE_NAME = "yegnafarm-v4";
 const ASSETS = [
   "/",
   "/index.html",
   "/chat.html",
+  "/signup.html",
   "/crop-guide.html",
   "/market.html",
   "/dashboard.html",
   "/upload.html",
   "/css/style.css",
+  "/js/api-config.js",
   "/js/app.js",
+  "/js/auth-page.js",
+  "/js/dashboard-expert.js",
   "/js/yegna-api.js",
   "/js/ui-toast.js",
   "/data/guides.json",
@@ -24,6 +28,7 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
+  self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
@@ -36,6 +41,7 @@ self.addEventListener("activate", (event) => {
       )
     )
   );
+  self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {

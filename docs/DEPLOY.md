@@ -33,6 +33,7 @@ After the first deploy (or from your PC with that URL in `.env`):
 
 ```bash
 npm run migrate
+npm run migrate:prompt-logs
 npm run seed
 ```
 
@@ -52,9 +53,17 @@ On a host without a shell, run migrate/seed once from your machine pointing at t
    | `DATABASE_URL` | `postgres://...` |
    | `JWT_SECRET` | long random string (16+ chars) |
    | `OPENAI_API_KEY` | optional |
+   | `ANTHROPIC_API_KEY` | optional |
+   | `GEMINI_API_KEY` | optional |
+   | `GROK_API_KEY` | optional |
+   | `DEEPSEEK_API_KEY` | optional |
+   | `PREFERRED_AI_PROVIDERS` | `openai,claude,gemini,grok,deepseek` |
    | `FRONTEND_ORIGIN` | `https://your-service.onrender.com` |
 
 5. Deploy. Open the `.onrender.com` URL.
+6. Verify:
+   - `GET /health` should return `status: ok`
+   - `GET /health/db` should return `database: reachable`
 
 **Pros:** Same layout as local dev, file uploads work the same (within disk limits), no Vercel routing tricks.
 
@@ -98,6 +107,9 @@ Only needed if you insist on Vercel for pages but want a long-running API elsewh
 
 - [ ] GitHub repo created and code pushed  
 - [ ] `DATABASE_URL` + `JWT_SECRET` set on the host  
-- [ ] `npm run migrate` + `npm run seed` run against that database  
+- [ ] `npm run migrate` + `npm run migrate:prompt-logs` + `npm run seed` run against that database  
 - [ ] `npm run create-admin` (optional) with production `DATABASE_URL`  
 - [ ] `FRONTEND_ORIGIN` matches your real site URL (for CORS)
+- [ ] At least one AI key set (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `GROK_API_KEY`, or `DEEPSEEK_API_KEY`)
+- [ ] `npm run preflight` passes locally before deploy
+- [ ] `/health` and `/health/db` both pass after deploy

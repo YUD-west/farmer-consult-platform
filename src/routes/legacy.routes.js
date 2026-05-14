@@ -16,7 +16,12 @@ router.post(
   "/ask",
   asyncHandler(async (req, res) => {
     const question = req.body.question || "";
-    const result = await aiService.chat({ question, region: req.body.region, language: req.body.language || "en" });
+    const result = await aiService.chat({
+      question,
+      region: req.body.region,
+      language: req.body.language || "en",
+      agroEcology: req.body.agroEcology,
+    });
     res.json({ answer: result.answer });
   })
 );
