@@ -223,9 +223,10 @@ function HomePage() {
           </span>
         ) : (
           <span className="text-red-800">
-            Cannot reach backend. In Vercel set{" "}
-            <code className="rounded bg-red-50 px-1">VITE_API_URL=https://farmer-consult-platform-1.onrender.com</code>{" "}
-            and redeploy.
+            Cannot reach API from this site. (1) Vercel env:{" "}
+            <code className="rounded bg-red-50 px-1">VITE_API_URL=https://farmer-consult-platform-1.onrender.com</code> then
+            redeploy. (2) Render env: <code className="rounded bg-red-50 px-1">FRONTEND_ORIGIN</code> must be this page&apos;s
+            origin (your Vercel URL), not the Render URL — comma-separated for multiple URLs. Then redeploy Render.
           </span>
         )}
       </div>
