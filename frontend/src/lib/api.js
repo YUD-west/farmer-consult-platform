@@ -1,8 +1,13 @@
 /**
- * Backend base URL (Render). Set in Vercel: VITE_API_URL=https://your-backend.onrender.com
- * For local Vite dev, use .env with VITE_API_URL or rely on vite.config.js proxy.
+ * Backend base URL (Render).
+ * Prefer VITE_API_URL in Vercel (Production + Preview). It is baked in at build time.
+ * If you omit it, production builds fall back to the default Render host below.
  */
-export const API_BASE = String(import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+const PRODUCTION_DEFAULT_API = "https://farmer-consult-platform-1.onrender.com";
+
+export const API_BASE = String(
+  import.meta.env.VITE_API_URL || (import.meta.env.PROD ? PRODUCTION_DEFAULT_API : "")
+).replace(/\/$/, "");
 
 export function apiUrl(path) {
   const p = path.startsWith("/") ? path : `/${path}`;
