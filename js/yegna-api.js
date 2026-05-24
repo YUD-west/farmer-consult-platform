@@ -1,6 +1,6 @@
 (function () {
   const TOKEN_KEY = "yegnafarm_token";
-  const DEFAULT_API_ORIGIN = "https://farmer-consult-platform-1.onrender.com";
+  const DEFAULT_API_ORIGIN = "https://farmer-consult-platform.onrender.com";
 
   const resolveApiOrigin = () => {
     if (typeof window === "undefined") return DEFAULT_API_ORIGIN.replace(/\/$/, "");

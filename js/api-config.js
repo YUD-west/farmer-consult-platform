@@ -20,7 +20,7 @@
   } else {
     var host = window.location.hostname || "";
     if (host.endsWith(".vercel.app") || host === "vercel.app") {
-      window.__YEGNA_API_ORIGIN__ = "https://farmer-consult-platform-1.onrender.com";
+      window.__YEGNA_API_ORIGIN__ = "https://farmer-consult-platform.onrender.com";
     } else {
       window.__YEGNA_API_ORIGIN__ = "";
     }

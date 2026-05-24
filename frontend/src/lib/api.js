@@ -3,7 +3,7 @@
  * Prefer VITE_API_URL in Vercel (Production + Preview). It is baked in at build time.
  * If you omit it, production builds fall back to the default Render host below.
  */
-const PRODUCTION_DEFAULT_API = "https://farmer-consult-platform-1.onrender.com";
+const PRODUCTION_DEFAULT_API = "https://farmer-consult-platform.onrender.com";
 
 export const API_BASE = String(
   import.meta.env.VITE_API_URL || (import.meta.env.PROD ? PRODUCTION_DEFAULT_API : "")
