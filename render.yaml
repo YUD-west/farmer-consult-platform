@@ -5,7 +5,7 @@ services:
     name: yegnafarm
     runtime: node
     plan: free
-    buildCommand: npm install
+    buildCommand: npm install && npm run build:frontend
     startCommand: npm start
     healthCheckPath: /health
     envVars:

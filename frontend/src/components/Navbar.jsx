@@ -2,7 +2,6 @@ import { Menu, Search, X } from "lucide-react";
 import { useState } from "react";
 import Button from "./ui/Button";
 import { Input } from "./ui/Input";
-import { externalPage } from "../lib/api";
 
 const navItems = [
   { label: "Home", href: "#home" },
@@ -10,13 +9,12 @@ const navItems = [
   { label: "Services", href: "#services" },
   { label: "Guides", href: "#guides" },
   { label: "Experts", href: "#experts" },
+  { label: "Dashboard", href: "#dashboard" },
   { label: "AI Help", href: "#chat" },
 ];
 
 export default function Navbar({ onSearchFocus }) {
   const [open, setOpen] = useState(false);
-  const signupHref = externalPage("/signup.html");
-  const chatHref = externalPage("/chat.html");
 
   return (
     <header className="sticky top-0 z-50 border-b border-green-100/70 bg-white/80 backdrop-blur-lg">
@@ -47,14 +45,14 @@ export default function Navbar({ onSearchFocus }) {
           </div>
         </div>
         <div className="hidden items-center gap-2 md:flex">
-          <Button as="a" href={signupHref} variant="outline">
-            Login
+          <Button as="a" href="#signup" variant="outline">
+            Sign in
           </Button>
-          <Button as="a" href={signupHref}>
+          <Button as="a" href="#signup">
             Get Started
           </Button>
-          <Button as="a" href={chatHref} variant="outline" className="hidden xl:inline-flex">
-            Full Chat
+          <Button as="a" href="#upload" variant="outline" className="hidden xl:inline-flex">
+            Photo diagnosis
           </Button>
         </div>
         <button
@@ -79,11 +77,14 @@ export default function Navbar({ onSearchFocus }) {
                 {label}
               </a>
             ))}
-            <Button as="a" href={signupHref} variant="outline">
-              Login
+            <Button as="a" href="#signup" variant="outline">
+              Sign in
             </Button>
-            <Button as="a" href={signupHref}>
+            <Button as="a" href="#signup">
               Get Started
+            </Button>
+            <Button as="a" href="#upload" variant="outline">
+              Photo diagnosis
             </Button>
           </div>
         </div>

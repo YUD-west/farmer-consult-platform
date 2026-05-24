@@ -15,6 +15,17 @@ const PUBLIC_ROOT = path.join(__dirname, "..");
 const FRONTEND_DIST = path.join(PUBLIC_ROOT, "frontend", "dist");
 const FRONTEND_INDEX = path.join(FRONTEND_DIST, "index.html");
 const HAS_FRONTEND_DIST = fs.existsSync(FRONTEND_INDEX);
+const UPLOADS_DIR = path.join(PUBLIC_ROOT, "uploads");
+
+const LEGACY_REDIRECTS = {
+  "/index.html": "/",
+  "/chat.html": "/?section=chat",
+  "/signup.html": "/?section=signup",
+  "/upload.html": "/?section=upload",
+  "/market.html": "/?section=market",
+  "/dashboard.html": "/?section=dashboard",
+  "/crop-guide.html": "/?section=guides",
+};
 
 /** Normalize browser origin (no trailing slash). */
 function normalizeOrigin(origin) {
@@ -113,6 +124,12 @@ function createApp() {
     });
   });
 
+  Object.entries(LEGACY_REDIRECTS).forEach(([from, to]) => {
+    app.get(from, (_req, res) => {
+      res.redirect(302, to);
+    });
+  });
+
   app.get(["/health/db", "/api/v1/health/db"], async (req, res) => {
     try {
       const pool = getPool();
@@ -134,6 +151,8 @@ function createApp() {
   app.use("/api/v1", v1Routes);
   app.use(legacyRoutes);
 
+  app.use("/uploads", express.static(UPLOADS_DIR));
+
   // Serve React homepage when frontend build exists.
   if (HAS_FRONTEND_DIST) {
     app.use(express.static(FRONTEND_DIST, { index: false }));
@@ -141,8 +160,6 @@ function createApp() {
       res.sendFile(FRONTEND_INDEX);
     });
   }
-
-  app.use(express.static(PUBLIC_ROOT, { extensions: ["html"] }));
 
   app.use(errorHandler);
 

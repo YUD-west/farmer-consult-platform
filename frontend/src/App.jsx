@@ -15,10 +15,13 @@ import ExpertCard from "./components/ExpertCard";
 import Navbar from "./components/Navbar";
 import ProductCard from "./components/ProductCard";
 import StatsCard from "./components/StatsCard";
+import AuthSection from "./components/AuthSection";
+import UploadSection from "./components/UploadSection";
 import Badge from "./components/ui/Badge";
 import Button from "./components/ui/Button";
 import { Input, Select } from "./components/ui/Input";
-import { API_BASE, apiGetJson, apiPostJson, apiUrl, externalPage, postChat } from "./lib/api";
+import { API_BASE, apiGetJson, apiPostJson, apiUrl, postChat } from "./lib/api";
+import { getStoredSession } from "./lib/session";
 
 const PLACEHOLDER_IMG =
   "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=900&q=80";
@@ -68,6 +71,18 @@ function resolveImageUrl(raw) {
   return `/${path}`;
 }
 
+function scrollToSection(sectionId) {
+  if (!sectionId) return;
+
+  window.requestAnimationFrame(() => {
+    const target = document.getElementById(sectionId);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.history.replaceState(null, "", `#${sectionId}`);
+    }
+  });
+}
+
 function HomePage() {
   const [healthOk, setHealthOk] = useState(null);
   const [dbOk, setDbOk] = useState(null);
@@ -89,6 +104,7 @@ function HomePage() {
   const [qBody, setQBody] = useState("");
   const [qBusy, setQBusy] = useState(false);
   const [qStatus, setQStatus] = useState("");
+  const [currentUser, setCurrentUser] = useState(() => getStoredSession()?.user ?? null);
 
   useEffect(() => {
     let cancelled = false;
@@ -131,6 +147,42 @@ function HomePage() {
     }
 
     boot();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const sectionFromQuery = new URLSearchParams(window.location.search).get("section");
+    const sectionFromHash = window.location.hash.replace(/^#/, "");
+    const sectionId = sectionFromQuery || sectionFromHash;
+
+    if (sectionId) {
+      scrollToSection(sectionId);
+    }
+
+    if (!("serviceWorker" in navigator)) return undefined;
+
+    let cancelled = false;
+    navigator.serviceWorker
+      .getRegistrations()
+      .then((registrations) => {
+        if (cancelled) return;
+        return Promise.all(registrations.map((registration) => registration.unregister()));
+      })
+      .catch(() => {
+        /* ignore service worker cleanup failures */
+      });
+
+    if (window.caches?.keys) {
+      window.caches
+        .keys()
+        .then((keys) => Promise.all(keys.map((key) => window.caches.delete(key))))
+        .catch(() => {
+          /* ignore cache cleanup failures */
+        });
+    }
+
     return () => {
       cancelled = true;
     };
@@ -207,9 +259,6 @@ function HomePage() {
     }
   }
 
-  const signupHref = externalPage("/signup.html");
-  const uploadHref = externalPage("/upload.html");
-
   return (
     <div className="bg-brand-bg">
       <div className="border-b border-green-100 bg-white/90 px-4 py-2 text-center text-sm">
@@ -258,13 +307,13 @@ function HomePage() {
                 support — powered by your live Render API.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Button as="a" href={signupHref}>
+                <Button as="a" href="#signup">
                   Get Started Free
                 </Button>
                 <Button as="a" href="#market" variant="outline">
                   Explore Marketplace
                 </Button>
-                <Button as="a" href={uploadHref} variant="outline">
+                <Button as="a" href="#upload" variant="outline">
                   Photo diagnosis
                 </Button>
               </div>
@@ -335,6 +384,8 @@ function HomePage() {
           </div>
         </section>
 
+        <AuthSection onSessionChange={setCurrentUser} />
+
         <section id="guides" className="bg-white/60 px-4 py-16 md:px-6">
           <div className="mx-auto w-full max-w-7xl">
             <h2 className="heading-font text-3xl font-bold text-brand-text">Guides</h2>
@@ -352,8 +403,8 @@ function HomePage() {
                   >
                     <h3 className="heading-font text-lg font-semibold text-brand-text">{family}</h3>
                     <p className="mt-2 text-sm text-brand-muted">Crop families and tips from your API.</p>
-                    <Button as="a" href={externalPage("/crop-guide.html")} variant="outline" className="mt-4 w-full">
-                      Open legacy guide hub
+                    <Button as="a" href="#chat" variant="outline" className="mt-4 w-full">
+                      Ask about this guide
                     </Button>
                   </article>
                 ))}
@@ -392,9 +443,9 @@ function HomePage() {
               </div>
               <aside className="rounded-3xl bg-gradient-to-br from-brand-primary to-brand-secondary p-6 text-white shadow-xl">
                 <h3 className="heading-font text-2xl font-bold">Join thousands of buyers and sellers</h3>
-                <p className="mt-3 text-sm text-green-50">Use the full market tools on the classic site or API.</p>
-                <Button as="a" href={externalPage("/market.html")} className="mt-6 w-full">
-                  Open full market page
+                <p className="mt-3 text-sm text-green-50">Use the full market tools on this page or the API.</p>
+                <Button as="a" href="#signup" className="mt-6 w-full">
+                  Create seller account
                 </Button>
               </aside>
             </div>
@@ -411,14 +462,14 @@ function HomePage() {
               ))}
             </div>
             <div className="mt-6 flex justify-center">
-              <Button as="a" href={externalPage("/dashboard.html")} variant="secondary">
-                Expert dashboard
+              <Button as="a" href="#dashboard" variant="secondary">
+                Open dashboard
               </Button>
             </div>
           </div>
         </section>
 
-        <section className="bg-white/70 px-4 py-16 md:px-6">
+        <section id="dashboard" className="scroll-mt-24 bg-white/70 px-4 py-16 md:px-6">
           <div className="mx-auto grid w-full max-w-7xl gap-6 lg:grid-cols-2">
             <div className="grid gap-4 sm:grid-cols-2">
               {statItems.map(([label, value]) => (
@@ -426,11 +477,44 @@ function HomePage() {
               ))}
             </div>
             <article className="rounded-3xl border border-green-100 bg-white/80 p-7 shadow-lg backdrop-blur">
-              <Badge>Platform activity</Badge>
-              <p className="mt-4 text-lg font-medium text-brand-text">
-                Dashboard stats load from GET /dashboard-stats when the database is connected.
-              </p>
-              <p className="mt-4 text-sm text-brand-muted">If numbers show placeholders, API is up but stats endpoint returned empty.</p>
+              <Badge>{currentUser ? "Signed in" : "Account"}</Badge>
+              {currentUser ? (
+                <>
+                  <p className="mt-4 text-lg font-medium text-brand-text">
+                    Welcome back, {currentUser.fullName || currentUser.email}.
+                  </p>
+                  <dl className="mt-4 grid gap-3 text-sm text-brand-muted sm:grid-cols-2">
+                    <div>
+                      <dt className="font-semibold text-brand-text">Role</dt>
+                      <dd>{currentUser.role || "farmer"}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-brand-text">Region</dt>
+                      <dd>{currentUser.region || "Not set"}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-brand-text">Verified expert</dt>
+                      <dd>{currentUser.verifiedExpert ? "Yes" : "No"}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-brand-text">Email</dt>
+                      <dd>{currentUser.email}</dd>
+                    </div>
+                  </dl>
+                  <p className="mt-4 text-sm text-brand-muted">
+                    The old dashboard route now resolves here, so there is only one frontend path to maintain.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="mt-4 text-lg font-medium text-brand-text">
+                    Create an account or sign in to save questions, track activity, and unlock expert tools.
+                  </p>
+                  <p className="mt-4 text-sm text-brand-muted">
+                    Dashboard stats load from GET /dashboard-stats when the database is connected.
+                  </p>
+                </>
+              )}
             </article>
           </div>
         </section>
@@ -491,20 +575,24 @@ function HomePage() {
                     Send
                   </Button>
                 </div>
-                <Button as="a" href={externalPage("/chat.html")} variant="outline" className="mt-3 w-full">
-                  Open full chat page
+                <Button as="a" href="#upload" variant="outline" className="mt-3 w-full">
+                  Try photo diagnosis
                 </Button>
               </article>
             </div>
           </div>
         </section>
 
+        <UploadSection />
+
         <section className="px-4 py-16 md:px-6">
           <div className="mx-auto max-w-7xl rounded-[2rem] bg-gradient-to-r from-brand-primary to-brand-secondary px-6 py-12 text-center text-white">
             <h2 className="heading-font text-4xl font-bold">Ready to grow smarter?</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-green-50">Same backend powers this React UI and the classic HTML pages.</p>
+            <p className="mx-auto mt-3 max-w-2xl text-green-50">
+              Same backend powers this React UI, and the retired HTML routes now point back here.
+            </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <Button as="a" href={signupHref}>
+              <Button as="a" href="#signup">
                 Get Started Free
               </Button>
               <Button as="a" href="#market" variant="outline" className="border-white bg-transparent text-white hover:bg-white/10">
@@ -529,13 +617,13 @@ function HomePage() {
           </div>
           {[
             ["Platform", [
-              ["Market (classic)", externalPage("/market.html")],
-              ["Upload / detect", uploadHref],
+              ["Market", "#market"],
+              ["Upload / detect", "#upload"],
               ["Health", apiUrl("/health")],
             ]],
             ["Account", [
-              ["Sign up", signupHref],
-              ["Dashboard", externalPage("/dashboard.html")],
+              ["Sign up", "#signup"],
+              ["Dashboard", "#dashboard"],
             ]],
           ].map(([title, links]) => (
             <div key={title}>

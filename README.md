@@ -7,7 +7,7 @@ Digital agricultural support for Ethiopia: guides, market listings, farmer quest
 Push this folder to GitHub, then deploy:
 
 - **Easiest full-stack (recommended):** [Render](https://render.com) — connect the repo, set `DATABASE_URL` + `JWT_SECRET`, run migrate/seed. See `render.yaml`.
-- **Vercel:** Import the repo; `vercel.json` + `api/index.js` route API traffic only (static HTML/CSS/JS stay on the CDN). Read caveats in **`docs/DEPLOY.md`**.
+- **Vercel:** Import the repo; `vercel.json` builds the single React frontend in `frontend/`, and the old HTML routes redirect back into that SPA. Read caveats in **`docs/DEPLOY.md`**.
 - Step-by-step (Git init, env vars, checklist): **`docs/DEPLOY.md`**.
 
 ## Quick start (local)
@@ -163,7 +163,7 @@ npm run preflight
 | GET | `/analytics/overview` | admin | Basic aggregates |
 | POST | `/detect/pest` | — | Image upload + **placeholder** response for future model |
 
-**Legacy paths** still supported for existing HTML: `POST /ask`, `POST /ask-question`, `GET /market-data`, `GET /dashboard-stats`, `POST /detect`.
+**Legacy paths** now redirect into the single frontend path, but the compatibility APIs still exist for the upgraded UI: `POST /ask`, `POST /ask-question`, `GET /market-data`, `GET /dashboard-stats`, `POST /detect`.
 
 ---
 

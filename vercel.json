@@ -2,6 +2,15 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build:frontend",
   "outputDirectory": "frontend/dist",
+  "redirects": [
+    { "source": "/index.html", "destination": "/", "permanent": false },
+    { "source": "/chat.html", "destination": "/?section=chat", "permanent": false },
+    { "source": "/signup.html", "destination": "/?section=signup", "permanent": false },
+    { "source": "/upload.html", "destination": "/?section=upload", "permanent": false },
+    { "source": "/market.html", "destination": "/?section=market", "permanent": false },
+    { "source": "/dashboard.html", "destination": "/?section=dashboard", "permanent": false },
+    { "source": "/crop-guide.html", "destination": "/?section=guides", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api" },
     { "source": "/ask", "destination": "/api" },
