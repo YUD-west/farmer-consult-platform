@@ -2,9 +2,15 @@
 
 Digital agricultural support for Ethiopia: guides, market listings, farmer questions, hybrid AI (guides + optional OpenAI + cache), expert workflow scaffolding, and PWA-friendly static pages.
 
+## Live app
+
+- **Frontend on Vercel:** [https://frontend-alpha-gray-52.vercel.app](https://frontend-alpha-gray-52.vercel.app)
+- **Backend API on Render:** [https://farmer-consult-platform.onrender.com](https://farmer-consult-platform.onrender.com)
+- **GitHub repo:** [https://github.com/YUD-west/farmer-consult-platform](https://github.com/YUD-west/farmer-consult-platform)
+
 ## GitHub & hosting
 
-Push this folder to GitHub, then deploy:
+Use the links above to open the deployed app directly from GitHub, then deploy or redeploy from the repo as needed:
 
 - **Easiest full-stack (recommended):** [Render](https://render.com) — connect the repo, set `DATABASE_URL` + `JWT_SECRET`, run migrate/seed. See `render.yaml`.
 - **Vercel:** Import the repo; `vercel.json` builds the single React frontend in `frontend/`, and the old HTML routes redirect back into that SPA. Read caveats in **`docs/DEPLOY.md`**.
