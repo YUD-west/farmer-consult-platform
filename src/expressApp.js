@@ -16,15 +16,21 @@ const FRONTEND_DIST = path.join(PUBLIC_ROOT, "frontend", "dist");
 const FRONTEND_INDEX = path.join(FRONTEND_DIST, "index.html");
 const HAS_FRONTEND_DIST = fs.existsSync(FRONTEND_INDEX);
 const UPLOADS_DIR = path.join(PUBLIC_ROOT, "uploads");
+const FRONTEND_ORIGIN = normalizeOrigin(process.env.FRONTEND_ORIGIN || "");
+
+function frontendUrl(pathname = "/") {
+  const path = pathname.startsWith("/") ? pathname : `/${pathname}`;
+  return FRONTEND_ORIGIN ? `${FRONTEND_ORIGIN}${path}` : path;
+}
 
 const LEGACY_REDIRECTS = {
-  "/index.html": "/",
-  "/chat.html": "/?section=chat",
-  "/signup.html": "/?section=signup",
-  "/upload.html": "/?section=upload",
-  "/market.html": "/?section=market",
-  "/dashboard.html": "/?section=dashboard",
-  "/crop-guide.html": "/?section=guides",
+  "/index.html": frontendUrl("/"),
+  "/chat.html": frontendUrl("/?section=chat"),
+  "/signup.html": frontendUrl("/?section=signup"),
+  "/upload.html": frontendUrl("/?section=upload"),
+  "/market.html": frontendUrl("/?section=market"),
+  "/dashboard.html": frontendUrl("/?section=dashboard"),
+  "/crop-guide.html": frontendUrl("/?section=guides"),
 };
 
 /** Normalize browser origin (no trailing slash). */
@@ -154,7 +160,11 @@ function createApp() {
   app.use("/uploads", express.static(UPLOADS_DIR));
 
   // Serve React homepage when frontend build exists.
-  if (HAS_FRONTEND_DIST) {
+  if (FRONTEND_ORIGIN) {
+    app.get("/", (_req, res) => {
+      res.redirect(302, FRONTEND_ORIGIN);
+    });
+  } else if (HAS_FRONTEND_DIST) {
     app.use(express.static(FRONTEND_DIST, { index: false }));
     app.get("/", (_req, res) => {
       res.sendFile(FRONTEND_INDEX);
