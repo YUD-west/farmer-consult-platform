@@ -9,7 +9,7 @@
     { "source": "/signup.html", "destination": "/?section=signup", "permanent": false },
     { "source": "/upload.html", "destination": "/?section=upload", "permanent": false },
     { "source": "/market.html", "destination": "/?section=market", "permanent": false },
-    { "source": "/dashboard.html", "destination": "/?section=dashboard", "permanent": false },
+    { "source": "/dashboard.html", "destination": "/?section=expert-dashboard", "permanent": false },
     { "source": "/crop-guide.html", "destination": "/?section=guides", "permanent": false }
   ]
 }

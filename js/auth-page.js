@@ -14,7 +14,7 @@
       window.location.href = "dashboard.html";
       return;
     }
-    window.location.href = "index.html";
+    window.location.href = "/?section=dashboard";
   }
 
   if (registerForm) {

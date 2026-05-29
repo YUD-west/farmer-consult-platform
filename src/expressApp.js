@@ -24,12 +24,11 @@ function frontendUrl(pathname = "/") {
 }
 
 const LEGACY_REDIRECTS = {
-  "/index.html": frontendUrl("/"),
   "/chat.html": frontendUrl("/?section=chat"),
   "/signup.html": frontendUrl("/?section=signup"),
   "/upload.html": frontendUrl("/?section=upload"),
   "/market.html": frontendUrl("/?section=market"),
-  "/dashboard.html": frontendUrl("/?section=dashboard"),
+  "/dashboard.html": frontendUrl("/?section=expert-dashboard"),
   "/crop-guide.html": frontendUrl("/?section=guides"),
 };
 
@@ -130,6 +129,11 @@ function createApp() {
     });
   });
 
+  app.get("/index.html", (req, res) => {
+    const query = req.originalUrl.includes("?") ? req.originalUrl.slice(req.originalUrl.indexOf("?")) : "";
+    res.redirect(302, frontendUrl(query || "/"));
+  });
+
   Object.entries(LEGACY_REDIRECTS).forEach(([from, to]) => {
     app.get(from, (_req, res) => {
       res.redirect(302, to);
@@ -161,8 +165,9 @@ function createApp() {
 
   // Serve React homepage when frontend build exists.
   if (FRONTEND_ORIGIN) {
-    app.get("/", (_req, res) => {
-      res.redirect(302, FRONTEND_ORIGIN);
+    app.get("/", (req, res) => {
+      const query = req.originalUrl.includes("?") ? req.originalUrl.slice(req.originalUrl.indexOf("?")) : "";
+      res.redirect(302, `${FRONTEND_ORIGIN}/${query}`);
     });
   } else if (HAS_FRONTEND_DIST) {
     app.use(express.static(FRONTEND_DIST, { index: false }));
