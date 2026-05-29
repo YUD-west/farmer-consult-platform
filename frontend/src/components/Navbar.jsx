@@ -19,8 +19,13 @@ export default function Navbar({ onSearchFocus }) {
   return (
     <header className="sticky top-0 z-50 border-b border-green-100/70 bg-white/80 backdrop-blur-lg">
       <div className="mx-auto flex w-full max-w-7xl items-center gap-3 px-4 py-3 md:px-6">
-        <a href="#home" className="heading-font text-lg font-bold text-brand-primary">
-          YegnaFarm AI
+        <a href="#home" className="flex items-center gap-3 heading-font text-lg font-bold text-brand-primary">
+          <img
+            src="/assets/logo.png"
+            alt="YegnaFarm logo"
+            className="h-10 w-10 rounded-full border border-green-100 bg-white object-cover shadow-sm"
+          />
+          <span>YegnaFarm AI</span>
         </a>
         <nav className="hidden flex-1 items-center justify-center gap-5 lg:flex">
           {navItems.map(({ label, href }) => (

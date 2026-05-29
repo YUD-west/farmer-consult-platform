@@ -15,8 +15,25 @@ export function apiUrl(path) {
   return `${API_BASE}${p}`;
 }
 
-export async function apiGetJson(path) {
-  const res = await fetch(apiUrl(path), { headers: { Accept: "application/json" } });
+async function requestJson(path, { method = "GET", body, headers = {}, token = "", cache = "no-store" } = {}) {
+  const requestHeaders = { Accept: "application/json", ...headers };
+  if (token) {
+    requestHeaders.Authorization = `Bearer ${token}`;
+  }
+  const options = {
+    method,
+    headers: requestHeaders,
+    cache,
+  };
+  if (body !== undefined) {
+    if (body instanceof FormData) {
+      options.body = body;
+    } else {
+      requestHeaders["Content-Type"] = "application/json";
+      options.body = JSON.stringify(body);
+    }
+  }
+  const res = await fetch(apiUrl(path), options);
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     const err = new Error(data.error || res.statusText || "Request failed");
@@ -26,19 +43,20 @@ export async function apiGetJson(path) {
   return data;
 }
 
-export async function apiPostJson(path, body) {
-  const res = await fetch(apiUrl(path), {
-    method: "POST",
-    headers: { Accept: "application/json", "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    const err = new Error(data.error || data.message || res.statusText || "Request failed");
-    err.status = res.status;
-    throw err;
-  }
-  return data;
+export async function apiGetJson(path, options = {}) {
+  return requestJson(path, { ...options, method: "GET" });
+}
+
+export async function apiPostJson(path, body, options = {}) {
+  return requestJson(path, { ...options, method: "POST", body });
+}
+
+export async function apiAuthGetJson(path, token, options = {}) {
+  return requestJson(path, { ...options, method: "GET", token });
+}
+
+export async function apiAuthPostJson(path, body, token, options = {}) {
+  return requestJson(path, { ...options, method: "POST", body, token });
 }
 
 /** AI chat: prefer v1, fall back to legacy /ask */

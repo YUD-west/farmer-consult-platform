@@ -20,7 +20,7 @@ import UploadSection from "./components/UploadSection";
 import Badge from "./components/ui/Badge";
 import Button from "./components/ui/Button";
 import { Input, Select } from "./components/ui/Input";
-import { API_BASE, apiGetJson, apiPostJson, apiUrl, postChat } from "./lib/api";
+import { API_BASE, apiAuthGetJson, apiAuthPostJson, apiGetJson, apiPostJson, apiUrl, postChat } from "./lib/api";
 import { getStoredSession } from "./lib/session";
 
 const PLACEHOLDER_IMG =
@@ -61,14 +61,25 @@ const fadeUp = {
   show: { opacity: 1, y: 0, transition: { duration: 0.45 } },
 };
 
+const EXPERT_ROLES = new Set(["expert", "admin"]);
+
+function isExpertRole(role) {
+  return EXPERT_ROLES.has(role);
+}
+
 function resolveImageUrl(raw) {
   if (!raw) return PLACEHOLDER_IMG;
   const s = String(raw).trim();
   if (!s) return PLACEHOLDER_IMG;
   if (s.startsWith("http")) return s;
-  const path = s.replace(/^\//, "");
-  if (API_BASE) return `${API_BASE}/${path}`;
-  return `/${path}`;
+  const path = s.replace(/^\.?\//, "");
+  if (path.startsWith("assets/")) {
+    return `/${path}`;
+  }
+  if (path.startsWith("uploads/")) {
+    return API_BASE ? `${API_BASE}/${path}` : `/${path}`;
+  }
+  return API_BASE ? `${API_BASE}/${path}` : `/${path}`;
 }
 
 function scrollToSection(sectionId) {
@@ -81,6 +92,26 @@ function scrollToSection(sectionId) {
       window.history.replaceState(null, "", `#${sectionId}`);
     }
   });
+}
+
+async function cleanupLegacyBrowserState() {
+  if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
+    try {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map((registration) => registration.unregister()));
+    } catch {
+      /* ignore service worker cleanup failures */
+    }
+  }
+
+  if (typeof window !== "undefined" && window.caches?.keys) {
+    try {
+      const keys = await window.caches.keys();
+      await Promise.all(keys.map((key) => window.caches.delete(key)));
+    } catch {
+      /* ignore cache cleanup failures */
+    }
+  }
 }
 
 function HomePage() {
@@ -105,25 +136,46 @@ function HomePage() {
   const [qBusy, setQBusy] = useState(false);
   const [qStatus, setQStatus] = useState("");
   const [currentUser, setCurrentUser] = useState(() => getStoredSession()?.user ?? null);
+  const [expertQuestions, setExpertQuestions] = useState([]);
+  const [expertQuestionsLoading, setExpertQuestionsLoading] = useState(false);
+  const [expertQuestionsStatus, setExpertQuestionsStatus] = useState("");
+  const [expertAnswerDrafts, setExpertAnswerDrafts] = useState({});
 
   useEffect(() => {
     let cancelled = false;
 
     async function boot() {
+      await cleanupLegacyBrowserState();
+
+      const retryJson = async (loader, attempts = 2, delayMs = 400) => {
+        let lastError = null;
+        for (let index = 0; index < attempts; index += 1) {
+          try {
+            return await loader();
+          } catch (error) {
+            lastError = error;
+            if (index < attempts - 1) {
+              await new Promise((resolve) => window.setTimeout(resolve, delayMs * (index + 1)));
+            }
+          }
+        }
+        throw lastError;
+      };
+
       try {
-        await apiGetJson("/health");
+        await retryJson(() => apiGetJson("/health", { cache: "no-store" }));
         if (!cancelled) setHealthOk(true);
       } catch {
         if (!cancelled) setHealthOk(false);
       }
       try {
-        const d = await apiGetJson("/health/db");
+        const d = await retryJson(() => apiGetJson("/health/db", { cache: "no-store" }));
         if (!cancelled) setDbOk(d.status === "ok" && d.database === "reachable");
       } catch {
         if (!cancelled) setDbOk(false);
       }
       try {
-        const g = await apiGetJson("/api/v1/guides");
+        const g = await apiGetJson("/api/v1/guides", { cache: "no-store" });
         if (!cancelled) setGuidesFamilies(Array.isArray(g.families) ? g.families : []);
       } catch {
         if (!cancelled) setGuidesFamilies([]);
@@ -131,7 +183,7 @@ function HomePage() {
         if (!cancelled) setGuidesLoading(false);
       }
       try {
-        const m = await apiGetJson("/market-data");
+        const m = await apiGetJson("/market-data", { cache: "no-store" });
         if (!cancelled && Array.isArray(m)) setMarketRaw(m);
       } catch {
         /* use empty; UI still works */
@@ -139,7 +191,7 @@ function HomePage() {
         if (!cancelled) setMarketLoading(false);
       }
       try {
-        const s = await apiGetJson("/dashboard-stats");
+        const s = await apiGetJson("/dashboard-stats", { cache: "no-store" });
         if (!cancelled) setStats(s);
       } catch {
         if (!cancelled) setStats(null);
@@ -160,32 +212,7 @@ function HomePage() {
     if (sectionId) {
       scrollToSection(sectionId);
     }
-
-    if (!("serviceWorker" in navigator)) return undefined;
-
-    let cancelled = false;
-    navigator.serviceWorker
-      .getRegistrations()
-      .then((registrations) => {
-        if (cancelled) return;
-        return Promise.all(registrations.map((registration) => registration.unregister()));
-      })
-      .catch(() => {
-        /* ignore service worker cleanup failures */
-      });
-
-    if (window.caches?.keys) {
-      window.caches
-        .keys()
-        .then((keys) => Promise.all(keys.map((key) => window.caches.delete(key))))
-        .catch(() => {
-          /* ignore cache cleanup failures */
-        });
-    }
-
-    return () => {
-      cancelled = true;
-    };
+    return undefined;
   }, []);
 
   const products = useMemo(
@@ -223,6 +250,7 @@ function HomePage() {
         ["Happy Buyers", "8K+"],
         ["Satisfaction Rate", "95%"],
       ];
+  const dashboardTitle = isExpertRole(currentUser?.role) ? "Expert dashboard" : "User dashboard";
 
   async function sendAi() {
     const text = aiInput.trim();
@@ -239,6 +267,70 @@ function HomePage() {
       setAiBusy(false);
     }
   }
+
+  async function loadExpertQueue() {
+    if (!isExpertRole(currentUser?.role)) {
+      setExpertQuestions([]);
+      setExpertQuestionsStatus("");
+      return;
+    }
+
+    const token = getStoredSession()?.token ?? "";
+    if (!token) {
+      setExpertQuestions([]);
+      setExpertQuestionsStatus("Expert session expired. Please sign in again.");
+      return;
+    }
+
+    setExpertQuestionsLoading(true);
+    setExpertQuestionsStatus("");
+    try {
+      const questions = await apiAuthGetJson("/api/v1/questions?status=pending&limit=8", token, {
+        cache: "no-store",
+      });
+      if (Array.isArray(questions)) {
+        setExpertQuestions(questions);
+      } else {
+        setExpertQuestions([]);
+      }
+    } catch (error) {
+      setExpertQuestions([]);
+      setExpertQuestionsStatus(error.message || "Could not load the expert queue.");
+    } finally {
+      setExpertQuestionsLoading(false);
+    }
+  }
+
+  async function submitExpertAnswer(questionId) {
+    const body = String(expertAnswerDrafts[questionId] ?? "").trim();
+    if (!body) return;
+
+    const token = getStoredSession()?.token ?? "";
+    if (!token) {
+      setExpertQuestionsStatus("Expert session expired. Please sign in again.");
+      return;
+    }
+
+    try {
+      await apiAuthPostJson(`/api/v1/questions/${questionId}/answers`, { body }, token, {
+        cache: "no-store",
+      });
+      setExpertQuestionsStatus("Answer submitted successfully.");
+      setExpertAnswerDrafts((current) => {
+        const next = { ...current };
+        delete next[questionId];
+        return next;
+      });
+      await loadExpertQueue();
+    } catch (error) {
+      setExpertQuestionsStatus(error.message || "Could not submit the answer.");
+    }
+  }
+
+  useEffect(() => {
+    loadExpertQueue();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser?.role]);
 
   async function submitExpertQuestion(ev) {
     ev.preventDefault();
@@ -326,8 +418,8 @@ function HomePage() {
               className="relative"
             >
               <img
-                src="https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?auto=format&fit=crop&w=1200&q=80"
-                alt="Farmer using smartphone in field"
+                src="/assets/hero.jpg"
+                alt="Smiling farmer holding a tablet in a crop field"
                 className="h-[420px] w-full rounded-3xl object-cover shadow-2xl"
               />
               <div className="absolute -left-4 top-6 rounded-2xl bg-white/95 px-4 py-2 text-sm font-semibold shadow-lg">
@@ -477,11 +569,11 @@ function HomePage() {
               ))}
             </div>
             <article className="rounded-3xl border border-green-100 bg-white/80 p-7 shadow-lg backdrop-blur">
-              <Badge>{currentUser ? "Signed in" : "Account"}</Badge>
+              <Badge>{currentUser ? dashboardTitle : "Account"}</Badge>
               {currentUser ? (
                 <>
                   <p className="mt-4 text-lg font-medium text-brand-text">
-                    Welcome back, {currentUser.fullName || currentUser.email}.
+                    Welcome back, {currentUser.fullName || currentUser.email}. This is your {dashboardTitle.toLowerCase()}.
                   </p>
                   <dl className="mt-4 grid gap-3 text-sm text-brand-muted sm:grid-cols-2">
                     <div>
@@ -502,8 +594,15 @@ function HomePage() {
                     </div>
                   </dl>
                   <p className="mt-4 text-sm text-brand-muted">
-                    The old dashboard route now resolves here, so there is only one frontend path to maintain.
+                    {isExpertRole(currentUser.role)
+                      ? "The expert queue lives just below this card, so expert accounts can answer questions without leaving the SPA."
+                      : "Your account summary lives here, and the old dashboard route now resolves to the same frontend path."}
                   </p>
+                  {isExpertRole(currentUser.role) ? (
+                    <Button as="a" href="#expert-dashboard" variant="secondary" className="mt-5 w-full">
+                      Open expert queue
+                    </Button>
+                  ) : null}
                 </>
               ) : (
                 <>
@@ -516,6 +615,98 @@ function HomePage() {
                 </>
               )}
             </article>
+          </div>
+        </section>
+
+        <section id="expert-dashboard" className="bg-white/60 px-4 py-16 md:px-6">
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <Badge>Expert dashboard</Badge>
+                <h2 className="heading-font mt-3 text-3xl font-bold text-brand-text">Pending questions queue</h2>
+                <p className="mt-2 max-w-2xl text-sm text-brand-muted">
+                  Expert and admin accounts can review farmer questions, answer them, and keep the support flow inside the
+                  same frontend path.
+                </p>
+              </div>
+              {isExpertRole(currentUser?.role) ? (
+                <Button type="button" variant="outline" onClick={loadExpertQueue}>
+                  Refresh queue
+                </Button>
+              ) : (
+                <Button as="a" href="#signup" variant="outline">
+                  Sign in to access
+                </Button>
+              )}
+            </div>
+
+            <div className="mt-8 rounded-3xl border border-green-100 bg-white p-6 shadow-sm">
+              {isExpertRole(currentUser?.role) ? (
+                <>
+                  {expertQuestionsLoading ? (
+                    <p className="text-sm text-brand-muted">Loading expert queue…</p>
+                  ) : expertQuestions.length === 0 ? (
+                    <p className="text-sm text-brand-muted">No pending questions right now.</p>
+                  ) : (
+                    <div className="grid gap-4 lg:grid-cols-2">
+                      {expertQuestions.map((question) => {
+                        const asker = question.farmer_name || question.guest_name || question.farmer_email || "Farmer";
+                        const cropHint = question.crop_hint ? (
+                          <span className="inline-flex rounded-full bg-green-50 px-2 py-1 text-xs font-semibold text-green-700">
+                            {question.crop_hint}
+                          </span>
+                        ) : null;
+                        const draft = expertAnswerDrafts[question.id] || "";
+
+                        return (
+                          <article
+                            key={question.id}
+                            className="rounded-3xl border border-green-100 bg-green-50/60 p-5 shadow-sm"
+                          >
+                            <div className="flex flex-wrap items-start justify-between gap-3">
+                              <div>
+                                <h3 className="heading-font text-lg font-semibold text-brand-text">{asker}</h3>
+                                <p className="text-xs text-brand-muted">
+                                  {question.created_at ? new Date(question.created_at).toLocaleString() : "New question"}
+                                </p>
+                              </div>
+                              {cropHint}
+                            </div>
+                            <p className="mt-4 text-sm text-brand-text">{question.body}</p>
+                            <div className="mt-4 space-y-3">
+                              <textarea
+                                className="min-h-[110px] w-full rounded-2xl border border-green-200 bg-white px-4 py-3 text-sm text-brand-text placeholder:text-brand-muted/80 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+                                placeholder="Write your expert answer..."
+                                value={draft}
+                                onChange={(event) =>
+                                  setExpertAnswerDrafts((current) => ({
+                                    ...current,
+                                    [question.id]: event.target.value,
+                                  }))
+                                }
+                              />
+                              <Button
+                                type="button"
+                                variant="secondary"
+                                className="w-full"
+                                onClick={() => submitExpertAnswer(question.id)}
+                              >
+                                Send answer
+                              </Button>
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {expertQuestionsStatus ? <p className="mt-4 text-sm text-brand-muted">{expertQuestionsStatus}</p> : null}
+                </>
+              ) : (
+                <p className="text-sm text-brand-muted">
+                  Sign in as an expert or admin to see the question queue and answer incoming farmer requests.
+                </p>
+              )}
+            </div>
           </div>
         </section>
 

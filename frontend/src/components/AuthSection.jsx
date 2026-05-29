@@ -18,10 +18,16 @@ const initialLogin = {
   password: "",
 };
 
-function scrollToDashboard() {
+function scrollToSection(sectionId) {
+  if (!sectionId) return;
   window.requestAnimationFrame(() => {
-    document.getElementById("dashboard")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.history.replaceState(null, "", `#${sectionId}`);
   });
+}
+
+function resolveDashboardTarget(role) {
+  return role === "expert" || role === "admin" ? "expert-dashboard" : "dashboard";
 }
 
 export default function AuthSection({ onSessionChange }) {
@@ -62,8 +68,13 @@ export default function AuthSection({ onSessionChange }) {
       const data = await apiPostJson("/api/v1/auth/register", signupForm);
       syncSession({ token: data.token, user: data.user });
       setSignupForm(initialSignup);
-      setSignupMessage(`Welcome, ${data.user?.fullName || "farmer"}.`);
-      scrollToDashboard();
+      const target = resolveDashboardTarget(data.user?.role);
+      setSignupMessage(
+        target === "expert-dashboard"
+          ? `Welcome, ${data.user?.fullName || "expert"}. Your expert dashboard is ready.`
+          : `Welcome, ${data.user?.fullName || "farmer"}. Your user dashboard is ready.`
+      );
+      scrollToSection(target);
     } catch (error) {
       setSignupMessage(error.message || "Could not create the account.");
     } finally {
@@ -82,8 +93,13 @@ export default function AuthSection({ onSessionChange }) {
       const data = await apiPostJson("/api/v1/auth/login", loginForm);
       syncSession({ token: data.token, user: data.user });
       setLoginForm(initialLogin);
-      setLoginMessage(`Signed in as ${data.user?.fullName || data.user?.email || "user"}.`);
-      scrollToDashboard();
+      const target = resolveDashboardTarget(data.user?.role);
+      setLoginMessage(
+        target === "expert-dashboard"
+          ? `Signed in as ${data.user?.fullName || data.user?.email || "expert"}.`
+          : `Signed in as ${data.user?.fullName || data.user?.email || "user"}.`
+      );
+      scrollToSection(target);
     } catch (error) {
       setLoginMessage(error.message || "Login failed.");
     } finally {
@@ -223,11 +239,13 @@ export default function AuthSection({ onSessionChange }) {
             ) : (
               <Button
                 as="a"
-                href="#dashboard"
+                href={`#${resolveDashboardTarget(session?.user?.role)}`}
                 variant="outline"
                 className="mt-6 w-full border-white bg-transparent text-white hover:bg-white/10"
               >
-                Review dashboard
+                {session?.user?.role === "expert" || session?.user?.role === "admin"
+                  ? "Open expert dashboard"
+                  : "Open user dashboard"}
               </Button>
             )}
           </aside>
